@@ -6,9 +6,9 @@ pygame.init()
 
 windowSize = (500, 500)
 
-
-pygame.display.set_caption("Schemedit v1.0.2") # Sets title of window
+pygame.display.set_caption("Connect 4") # Sets title of window
 screen = pygame.display.set_mode(windowSize) # Sets the dimensions of the window to the windowSize
+
 #pygame.display.set_icon(None)
 
 ###### CLASSES ######
