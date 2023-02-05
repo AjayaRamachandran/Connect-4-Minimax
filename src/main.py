@@ -2,6 +2,7 @@
 import pygame
 import time
 
+import minimax
 ###### IMAGES ######
 None
 
@@ -54,20 +55,23 @@ def drawBoard(): # draws game state
                 pygame.draw.circle(screen, coinColor2, (100 + h*50, 375 - v*50), 15, 0)
 
 
-def refreshBoard(): # function to refresh the board after a player/opponent's click
+def addCoin(team): # function to refresh the board after a player/opponent's click
     height = 5
     while gameBoard[dropColumn][height - 1] == 0 and not height == 0: # repeatedly checks in downward succession for the first filled coin of the column, akin to gravity
         height -= 1
 
-    #height += 1 # previous value represents first filled row, increment by 1 to get last empty row
-
-    gameBoard[dropColumn][height] = 1 # fill said slot
+    if team == "player":
+        gameBoard[dropColumn][height] = 1 # fill said slot with red piece
+    elif team == "ai":
+        gameBoard[dropColumn][height] = 2 # fill said slot with yellow piece
 
 def renderNextCoin():
     pygame.draw.circle(screen, coinColor1, (tempDropX, 60), 15, 0)
 
 def aiTurn():
-    time.sleep(0.1)
+    global dropColumn
+    dropColumn = minimax.aiPlay()
+    addCoin("ai")
 
 
 
@@ -98,7 +102,7 @@ while running:
         #print(tempDropX[0])
         
         if pygame.mouse.get_pressed(num_buttons=3)[0] == 1: # if the mouse is pressed, change click status to turn can play out
-            refreshBoard()
+            addCoin("player")
             clickedStatus = 1
 
     if clickedStatus == 1:
