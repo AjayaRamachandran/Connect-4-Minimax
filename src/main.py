@@ -71,6 +71,8 @@ def renderNextCoin():
 def aiTurn():
     global dropColumn
     dropColumn = minimax.aiPlay()
+    print(dropColumn)
+
     addCoin("ai")
 
 
@@ -94,7 +96,7 @@ while running:
             tempDropX = 400
         
         dropColumn = int(tempDropX / 50 - 2) # turns tempDropX into an integer which represents the column that the mouse is hovering over
-        print(dropColumn)
+        #print(dropColumn)
 
         #graphicsDropX = graphicsDropX + (tempDropX - graphicsDropX) * 0.1
 
@@ -103,7 +105,10 @@ while running:
         
         if pygame.mouse.get_pressed(num_buttons=3)[0] == 1: # if the mouse is pressed, change click status to turn can play out
             addCoin("player")
+            
             clickedStatus = 1
+
+
 
     if clickedStatus == 1:
         aiTurn()
