@@ -105,6 +105,8 @@ while running:
         
         if pygame.mouse.get_pressed(num_buttons=3)[0] == 1: # if the mouse is pressed, change click status to turn can play out
             addCoin("player")
+            drawBoard()
+            pygame.display.update()
             
             clickedStatus = 1
 
