@@ -57,20 +57,28 @@ def drawBoard(): # draws game state
 
 def addCoin(team): # function to refresh the board after a player/opponent's click
     height = 5
-    while gameBoard[dropColumn][height - 1] == 0 and not height == 0: # repeatedly checks in downward succession for the first filled coin of the column, akin to gravity
-        height -= 1
+    if gameBoard[dropColumn][height] == 0 or team == "ai": # checks if stack is filled, if so does not let player go there
+        while gameBoard[dropColumn][height - 1] == 0 and not height == 0: # repeatedly checks in downward succession for the first filled coin of the column, akin to gravity
+            height -= 1
 
-    if team == "player":
-        gameBoard[dropColumn][height] = 1 # fill said slot with red piece
-    elif team == "ai":
-        gameBoard[dropColumn][height] = 2 # fill said slot with yellow piece
+        if team == "player":
+            gameBoard[dropColumn][height] = 1 # fill said slot with red piece
+        elif team == "ai":
+            gameBoard[dropColumn][height] = 2 # fill said slot with yellow piece
+
+        return("success") # returns success/fail based on whether the slot is a valid move
+    else:
+        return("fail")
 
 def renderNextCoin():
-    pygame.draw.circle(screen, coinColor1, (tempDropX, 60), 15, 0)
+    pygame.draw.circle(screen, coinColor1, (tempDropX, 60), 15, 0) # renders a preview coin where the mouse is hovering
 
-def aiTurn():
+def aiTurn(): # outsources actual ai play to the minimax module "minimax.py"
     global dropColumn
-    dropColumn = minimax.aiPlay()
+
+    time.sleep(1) # just for testing
+    dropColumn = minimax.aiTest()
+    #dropColumn = minimax.aiPlay()
     print(dropColumn)
 
     addCoin("ai")
@@ -104,15 +112,15 @@ while running:
         #print(tempDropX[0])
         
         if pygame.mouse.get_pressed(num_buttons=3)[0] == 1: # if the mouse is pressed, change click status to turn can play out
-            addCoin("player")
-            drawBoard()
-            pygame.display.update()
-            
-            clickedStatus = 1
+            if addCoin("player") == "success": # only processes as a valid move if "success" returns
+                drawBoard()
+                pygame.display.update()
+                
+                clickedStatus = 1
 
 
 
-    if clickedStatus == 1:
+    if clickedStatus == 1: # if player has played a valid move, then ai responds
         aiTurn()
         clickedStatus = 0
     
