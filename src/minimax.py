@@ -6,7 +6,7 @@ import time
 simLevel = 4
 treeCoords = None
 gameStateLibrary = [[]]
-nodeDepth = 1
+nodeDepth = 0
 permutations = 0
 testBoard = []
 
@@ -24,7 +24,7 @@ def runAddCoin(column, variation, team):
             variation[column][simheight] = 1 # fill said slot with red piece
         elif team == "ai":
             variation[column][simheight] = 2 # fill said slot with yellow piece
-
+        print("hello world")
         return(variation) # returns success/fail based on whether the slot is a valid move
     else:
         return("fail")
@@ -33,49 +33,57 @@ def runAddCoin(column, variation, team):
 def simulate(nodeDepth):
     global permutations
     global testBoard
+    global gameStateLibrary
+
+    gameStateLibrary.append([[]])
 
     print(nodeDepth)
+    #print(gameStateLibrary[nodeDepth])
+    print("zero")
     for variation in gameStateLibrary[nodeDepth]:
+        print("one")
 
         if nodeDepth == simLevel:
             None
         else:
-            #print(nodeDepth)
+            print("two")
             if nodeDepth % 2 == 0:
                 simTeam = "ai"
             else:
                 simTeam = "player"
-            testCol = 1
-            
-            gameStateLibrary.append([])
+            testCol = 0
 
             for testCol in range(0,7):
                 testBoard = variation
+                print("three")
 
-                simState = runAddCoin(testCol, variation, simTeam)
+                simState = runAddCoin(testCol, testBoard, simTeam)
                 if not simState == "fail":
                     permutations += 1
-                    gameStateLibrary[nodeDepth+1] = [simState]
+                    gameStateLibrary[nodeDepth+1].append(simState)
+
+
 
 def simulateTree():
     global nodeDepth
     nodeDepth = 0
-    for iter in range(simLevel):
+    for nodeDepth in range(simLevel):
         simulate(nodeDepth=nodeDepth)
-        nodeDepth += 1
 
-        
 
 
 def aiTest(board):
-    gameStateLibrary[0].append(board)
     #print(board)
+    gameStateLibrary = [[]]
+    gameStateLibrary[0].append(board)
+    
     print(gameStateLibrary)
 
     simulateTree()
     #print(permutations)
 
     aiMove = rand.randint(0,6)
+    #aiMove = 1
 
     time.sleep(0.2)
     #print(numAgentsTotal)

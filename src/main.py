@@ -76,7 +76,7 @@ def renderNextCoin():
 def aiTurn(): # outsources actual ai play to the minimax module "minimax.py"
     #global dropColumn
 
-    time.sleep(1) # just for testing
+    #time.sleep(1) # just for testing
     dropColumn = minimax.aiTest(board=gameBoard)
     #dropColumn = minimax.aiPlay()
     #print(dropColumn)
@@ -112,7 +112,7 @@ while running:
         #print(tempDropX[0])
         
         if pygame.mouse.get_pressed(num_buttons=3)[0] == 1: # if the mouse is pressed, change click status to turn can play out
-            if addCoin("player") == "success": # only processes as a valid move if "success" returns
+            if addCoin(team="player", column=dropColumn) == "success": # only processes as a valid move if "success" returns
                 drawBoard()
                 pygame.display.update()
                 
