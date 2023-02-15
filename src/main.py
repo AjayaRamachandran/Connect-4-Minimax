@@ -71,7 +71,7 @@ def addCoin(team): # function to refresh the board after a player/opponent's cli
         return("fail")
 
 def renderNextCoin():
-    pygame.draw.circle(screen, coinColor1, (tempDropX, 60), 15, 0) # renders a preview coin where the mouse is hovering
+    pygame.draw.circle(screen, coinColor1, (graphicsDropX, 60), 15, 0) # renders a preview coin where the mouse is hovering
 
 def aiTurn(): # outsources actual ai play to the minimax module "minimax.py"
     global dropColumn
@@ -106,7 +106,7 @@ while running:
         dropColumn = int(tempDropX / 50 - 2) # turns tempDropX into an integer which represents the column that the mouse is hovering over
         #print(dropColumn)
 
-        #graphicsDropX = graphicsDropX + (tempDropX - graphicsDropX) * 0.1
+        graphicsDropX = graphicsDropX + (tempDropX - graphicsDropX) * 0.3
 
         renderNextCoin()
         #print(tempDropX[0])
