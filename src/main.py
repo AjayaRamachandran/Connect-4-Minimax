@@ -55,16 +55,16 @@ def drawBoard(): # draws game state
                 pygame.draw.circle(screen, coinColor2, (100 + h*50, 375 - v*50), 15, 0)
 
 
-def addCoin(team): # function to refresh the board after a player/opponent's click
+def addCoin(team, column): # function to refresh the board after a player/opponent's click
     height = 5
-    if gameBoard[dropColumn][height] == 0 or team == "ai": # checks if stack is filled, if so does not let player go there
-        while gameBoard[dropColumn][height - 1] == 0 and not height == 0: # repeatedly checks in downward succession for the first filled coin of the column, akin to gravity
+    if gameBoard[column][height] == 0 or team == "ai": # checks if stack is filled, if so does not let player go there
+        while gameBoard[column][height - 1] == 0 and not height == 0: # repeatedly checks in downward succession for the first filled coin of the column, akin to gravity
             height -= 1
 
         if team == "player":
-            gameBoard[dropColumn][height] = 1 # fill said slot with red piece
+            gameBoard[column][height] = 1 # fill said slot with red piece
         elif team == "ai":
-            gameBoard[dropColumn][height] = 2 # fill said slot with yellow piece
+            gameBoard[column][height] = 2 # fill said slot with yellow piece
 
         return("success") # returns success/fail based on whether the slot is a valid move
     else:
@@ -74,14 +74,14 @@ def renderNextCoin():
     pygame.draw.circle(screen, coinColor1, (graphicsDropX, 60), 15, 0) # renders a preview coin where the mouse is hovering
 
 def aiTurn(): # outsources actual ai play to the minimax module "minimax.py"
-    global dropColumn
+    #global dropColumn
 
     time.sleep(1) # just for testing
     dropColumn = minimax.aiTest(board=gameBoard)
     #dropColumn = minimax.aiPlay()
     #print(dropColumn)
 
-    addCoin("ai")
+    addCoin(team="ai", column=dropColumn)
 
 
 
