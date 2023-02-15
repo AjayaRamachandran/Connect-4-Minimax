@@ -3,40 +3,45 @@ import random as rand
 import time
 
 ###### VARIABLES ######
-simLevel = 10
+simLevel = 4
 treeCoords = None
-gameStateLibrary = []
+gameStateLibrary = [[]]
 nodeDepth = 1
-
+permutations = 0
+testBoard = []
 
 ###### FUNCTIONS ######
 
-def runAddCoin(column, testBoard, team):
-    height = 5
-    
-    if testBoard[column][height] == 0:
-        while testBoard[column][height - 1] == 0 and not height == 0: # repeatedly checks in downward succession for the first filled coin of the column, akin to gravity
-            height -= 1
+def runAddCoin(column, variation, team):
+    simheight = 5
+
+    #print(testBoard)
+    if variation[column][simheight] == 0:
+        while variation[column][simheight - 1] == 0 and not simheight == 0: # repeatedly checks in downward succession for the first filled coin of the column, akin to gravity
+            simheight -= 1
 
         if team == "player":
-            testBoard[column][height] = 1 # fill said slot with red piece
+            variation[column][simheight] = 1 # fill said slot with red piece
         elif team == "ai":
-            testBoard[column][height] = 2 # fill said slot with yellow piece
+            variation[column][simheight] = 2 # fill said slot with yellow piece
 
-        return(testBoard) # returns success/fail based on whether the slot is a valid move
+        return(variation) # returns success/fail based on whether the slot is a valid move
     else:
         return("fail")
 
  
 def simulate(nodeDepth):
+    global permutations
+    global testBoard
 
+    print(nodeDepth)
     for variation in gameStateLibrary[nodeDepth]:
 
         if nodeDepth == simLevel:
             None
         else:
-            print(nodeDepth)
-            if nodeDepth % 2 == 1:
+            #print(nodeDepth)
+            if nodeDepth % 2 == 0:
                 simTeam = "ai"
             else:
                 simTeam = "player"
@@ -45,13 +50,16 @@ def simulate(nodeDepth):
             gameStateLibrary.append([])
 
             for testCol in range(0,7):
-                simState = runAddCoin(column=testCol, testBoard=variation, team=simTeam)
+                testBoard = variation
+
+                simState = runAddCoin(testCol, variation, simTeam)
                 if not simState == "fail":
-                    gameStateLibrary[nodeDepth+1].append([simState])
+                    permutations += 1
+                    gameStateLibrary[nodeDepth+1] = [simState]
 
 def simulateTree():
     global nodeDepth
-    nodeDepth = 1
+    nodeDepth = 0
     for iter in range(simLevel):
         simulate(nodeDepth=nodeDepth)
         nodeDepth += 1
@@ -60,11 +68,16 @@ def simulateTree():
 
 
 def aiTest(board):
-    global numAgentsTotal
+    gameStateLibrary[0].append(board)
+    #print(board)
+    print(gameStateLibrary)
+
+    simulateTree()
+    #print(permutations)
 
     aiMove = rand.randint(0,6)
 
-    time.sleep(1)
+    time.sleep(0.2)
     #print(numAgentsTotal)
 
     return(aiMove)
