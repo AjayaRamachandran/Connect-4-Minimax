@@ -4,8 +4,9 @@ import time
 
 ###### VARIABLES ######
 simLevel = 10
-numAgentsTotal = 0
-
+treeCoords = None
+gameStateLibrary = []
+nodeDepth = 1
 
 
 ###### FUNCTIONS ######
@@ -26,31 +27,34 @@ def runAddCoin(column, testBoard, team):
     else:
         return("fail")
 
+ 
+def simulate(nodeDepth):
 
-class simAgent:
-    def __init__(self):
-        None
-    
-    def simulate(self, nodeDepth, boardState):
-        global numAgentsTotal
+    for variation in gameStateLibrary[nodeDepth]:
 
         if nodeDepth == simLevel:
             None
         else:
-            #numAgentsTotal += 1
             print(nodeDepth)
             if nodeDepth % 2 == 1:
                 simTeam = "ai"
             else:
                 simTeam = "player"
             testCol = 1
-            testBoard = boardState
+            
+            gameStateLibrary.append([])
 
             for testCol in range(0,7):
-                simState = runAddCoin(column=testCol, testBoard=testBoard, team=simTeam)
+                simState = runAddCoin(column=testCol, testBoard=variation, team=simTeam)
                 if not simState == "fail":
-                    agent = simAgent()
-                    agent.simulate(nodeDepth=nodeDepth+1, boardState=testBoard)
+                    gameStateLibrary[nodeDepth+1].append([simState])
+
+def simulateTree():
+    global nodeDepth
+    nodeDepth = 1
+    for iter in range(simLevel):
+        simulate(nodeDepth=nodeDepth)
+        nodeDepth += 1
 
         
 
@@ -59,9 +63,7 @@ def aiTest(board):
     global numAgentsTotal
 
     aiMove = rand.randint(0,6)
-    agent1 = simAgent()
-    #aiMove = agent1.simulate(nodeDepth=1, boardState=board)
-    agent1.simulate(1, board)
+
     time.sleep(1)
     #print(numAgentsTotal)
 
