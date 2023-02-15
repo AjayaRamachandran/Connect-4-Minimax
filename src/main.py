@@ -77,9 +77,9 @@ def aiTurn(): # outsources actual ai play to the minimax module "minimax.py"
     global dropColumn
 
     time.sleep(1) # just for testing
-    dropColumn = minimax.aiTest()
+    dropColumn = minimax.aiTest(board=gameBoard)
     #dropColumn = minimax.aiPlay()
-    print(dropColumn)
+    #print(dropColumn)
 
     addCoin("ai")
 
