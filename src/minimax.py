@@ -1,6 +1,7 @@
 ###### IMPORT ######
 import random as rand
 import time
+import copy
 
 ###### VARIABLES ######
 simLevel = 4
@@ -14,8 +15,9 @@ testBoard = []
 
 def checkIfFull(sampleBoard):
     notFull = True
+    sampleBoardCopy = sampleBoard
 
-    for column in sampleBoard:
+    for column in sampleBoardCopy:
         for row in column:
             if row == 0:
                 notFull = False
@@ -24,24 +26,23 @@ def checkIfFull(sampleBoard):
 
 
 
-def runAddCoin(column, variation, team, simDepth): # simulates the placing of a coin in a certain column then returns the new gameState
+def simAddCoin(column, variation, team): # simulates the placing of a coin in a certain column then returns the new gameState
     simheight = 5
-    print(variation) # debug
+    variationCopy = variation
+    columnCopy = column
+    teamCopy = team
 
-    #print(testBoard) # debug
-    if variation[column][simheight] == 0: 
-        while variation[column][simheight - 1] == 0 and not simheight == 0: # repeatedly checks in downward succession for the first filled coin of the column, akin to gravity
+    if variationCopy[columnCopy][simheight] == 0: 
+        while variationCopy[columnCopy][simheight - 1] == 0 and not simheight == 0: # repeatedly checks in downward succession for the first filled coin of the column, akin to gravity
             simheight -= 1
 
-        if team == "player":
-            variation[column][simheight] = 1 # fill said slot with red piece
-        elif team == "ai":
-            variation[column][simheight] = 2 # fill said slot with yellow piece
+        if teamCopy == "player":
+            variationCopy[columnCopy][simheight] = 1 # fill said slot with red piece
+        elif teamCopy == "ai":
+            variationCopy[columnCopy][simheight] = 2 # fill said slot with yellow piece
 
-        #print("hello world") # debug
-        #print(simDepth)
 
-        return(variation) # returns success/fail based on whether the slot is a valid move
+        return(variationCopy) # returns success/fail based on whether the slot is a valid move
     else:
         return("fail") # if added coin is in an already full column, it cannot be placed, so function returns "fail"
 
@@ -49,36 +50,35 @@ def runAddCoin(column, variation, team, simDepth): # simulates the placing of a 
 
 def mapVariations(board, mapTeam, runDepth): # calculates every possible next move given a board state
     global permutations
+    mapTeamCopy = mapTeam
+    runDepthCopy = runDepth
+    boardCopy = copy.deepcopy(board)
 
     for testCol in range(0,7): # runs across every column
-        testBoard = board
-        #print("three") # debug
-        if checkIfFull(testBoard) == False:
-            simState = runAddCoin(column=testCol, variation=testBoard, team=mapTeam, simDepth=runDepth) # runs the runAddCoin functions for every column
+        testBoard = boardCopy
+        if checkIfFull(testBoard) == False: # if the board is full, don't run this bit
+            simState = simAddCoin(column=testCol, variation=testBoard, team=mapTeamCopy) # runs the simAddCoin functions for every column
             if not simState == "fail": # excludes columns where the next move would exit the top of the board
                 permutations += 1
-                gameStateLibrary[nodeDepth+1].append(simState) # appends the simState to the library, inside the next nodeDepth
+                gameStateLibrary[nodeDepth + 1].append(simState) # appends the simState to the library, inside the next nodeDepth
  
 
 
 def simulate(depth): # runs the mapVariations functions for every board state in a certain nodeDepth
     #global testBoard
+    global nodeDepth
     global gameStateLibrary
 
     gameStateLibrary.append([]) # appends a placeholder in the position of the next nodeDepth
-    print(depth)
-    #print(gameStateLibrary)
-    #print(gameStateLibrary[depth])
-    #print("zero") # debug
-    for variation in gameStateLibrary[depth]:
-        #print("one") # debug
+
+    for variation in gameStateLibrary[nodeDepth]:
 
         if depth % 2 == 0:
             simTeam = "ai"
         else:
             simTeam = "player"
 
-        mapVariations(board=variation, mapTeam=simTeam, runDepth=depth) # runs the mapVariations function if the simLevel limit is not reached
+        mapVariations(board=variation, mapTeam=simTeam, runDepth=nodeDepth) # runs the mapVariations function if the simLevel limit is not reached
 
 
 
@@ -93,20 +93,16 @@ def simulateTree(): # head function for branch simulation
 def aiTest(board): # master function, cues tree simulation and minimax algorithm
     global gameStateLibrary
 
-    #print(board)
     gameStateLibrary = [[]]
-    gameStateLibrary[0].append(board) # primes simulation with zeroeth nodeDepth, which is the current board state
+    boardCopy = board
+    gameStateLibrary[0].append(boardCopy) # primes simulation with zeroeth nodeDepth, which is the current board state
     
-    print(gameStateLibrary) # debug
-
     simulateTree()
-    print(gameStateLibrary)
-    print(permutations)
 
     aiMove = rand.randint(0,6) # test
 
     time.sleep(0.2)
-    #print(numAgentsTotal) # debug
+
 
     return(aiMove)
 

@@ -57,14 +57,18 @@ def drawBoard(): # draws game state
 
 def addCoin(team, column): # function to refresh the board after a player/opponent's click
     height = 5
-    if gameBoard[column][height] == 0 or team == "ai": # checks if stack is filled, if so does not let player go there
-        while gameBoard[column][height - 1] == 0 and not height == 0: # repeatedly checks in downward succession for the first filled coin of the column, akin to gravity
+    teamCopy = team
+    columnCopy = column
+    global gameBoard
+
+    if gameBoard[columnCopy][height] == 0 or team == "ai": # checks if stack is filled, if so does not let player go there
+        while gameBoard[columnCopy][height - 1] == 0 and not height == 0: # repeatedly checks in downward succession for the first filled coin of the column, akin to gravity
             height -= 1
 
-        if team == "player":
-            gameBoard[column][height] = 1 # fill said slot with red piece
-        elif team == "ai":
-            gameBoard[column][height] = 2 # fill said slot with yellow piece
+        if teamCopy == "player":
+            gameBoard[columnCopy][height] = 1 # fill said slot with red piece
+        elif teamCopy == "ai":
+            gameBoard[columnCopy][height] = 2 # fill said slot with yellow piece
 
         return("success") # returns success/fail based on whether the slot is a valid move
     else:
@@ -79,9 +83,9 @@ def aiTurn(): # outsources actual ai play to the minimax module "minimax.py"
     #time.sleep(1) # just for testing
     dropColumn = minimax.aiTest(board=gameBoard)
     #dropColumn = minimax.aiPlay()
-    #print(dropColumn)
 
     addCoin(team="ai", column=dropColumn)
+    time.sleep(0.3)
 
 
 
@@ -104,12 +108,10 @@ while running:
             tempDropX = 400
         
         dropColumn = int(tempDropX / 50 - 2) # turns tempDropX into an integer which represents the column that the mouse is hovering over
-        #print(dropColumn)
 
         graphicsDropX = graphicsDropX + (tempDropX - graphicsDropX) * 0.3
 
         renderNextCoin()
-        #print(tempDropX[0])
         
         if pygame.mouse.get_pressed(num_buttons=3)[0] == 1: # if the mouse is pressed, change click status to turn can play out
             if addCoin(team="player", column=dropColumn) == "success": # only processes as a valid move if "success" returns
@@ -123,8 +125,6 @@ while running:
     if clickedStatus == 1: # if player has played a valid move, then ai responds
         aiTurn()
         clickedStatus = 0
-    
-    #print(clickedStatus)
 
     # runs framerate wait time
     clock.tick(fps)
