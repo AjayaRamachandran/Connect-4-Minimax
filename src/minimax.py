@@ -92,6 +92,9 @@ def simulateTree(): # head function for branch simulation
 
 def aiTest(board): # master function, cues tree simulation and minimax algorithm
     global gameStateLibrary
+    global permutations
+
+    permutations = 0
 
     gameStateLibrary = [[]]
     boardCopy = board
@@ -102,8 +105,7 @@ def aiTest(board): # master function, cues tree simulation and minimax algorithm
     aiMove = rand.randint(0,6) # test
 
     time.sleep(0.2)
-
-
+    print(permutations)
     return(aiMove)
 
 

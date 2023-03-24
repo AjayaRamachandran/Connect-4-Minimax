@@ -3,6 +3,7 @@ import pygame
 import time
 
 import minimax
+import windetection
 ###### IMAGES ######
 None
 
