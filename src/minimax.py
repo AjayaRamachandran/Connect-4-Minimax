@@ -4,7 +4,7 @@ import time
 import copy
 
 ###### VARIABLES ######
-simLevel = 7
+simLevel = 6
 treeCoords = None
 gameStateLibrary = []
 gameIndexLibrary = []
@@ -36,7 +36,7 @@ def checkIfFull(sampleBoard):
 
 def simAddCoin(column, variation, team): # simulates the placing of a coin in a certain column then returns the new gameState
     simheight = 5
-    variationCopy = variation
+    variationCopy = copy.deepcopy(variation)
     columnCopy = column
     teamCopy = team
 
@@ -68,7 +68,9 @@ def mapVariations(board, mapTeam, runDepth): # calculates every possible next mo
         pathToBranchCopy = pathToBranch
 
         if checkIfFull(testBoard) == False: # if the board is full, don't run this bit
+            
             simState = simAddCoin(column=testCol, variation=testBoard, team=mapTeamCopy) # runs the simAddCoin functions for every column
+            #print(simState)
 
             if not simState == "fail": # excludes columns where the next move would exit the top of the board
 
