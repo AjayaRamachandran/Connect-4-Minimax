@@ -4,23 +4,23 @@ import time
 import copy
 
 ###### VARIABLES ######
-simLevel = 6
+simLevel = 5
 treeCoords = None
-gameStateLibrary = []
-gameIndexLibrary = []
-gameDepthLibrary = []
+gameStateLibrary = [] # massive list of all the possible game variations, once a nested lists, no longer
+gameIndexLibrary = [] # partner list that contains all the paths to the variations as a sequence of column plays
+gameDepthLibrary = [] # partner list that contains just the corresponding nodeDepths of each variation
 
-bufferLevel = []
-oldBufferLevel = []
+bufferLevel = [] # contains all the items from the gameStateLibrary that are currently being operated with when generating new variations
+oldBufferLevel = [] # obsolete
 
 nodeDepth = 0
 pathToBranch = 0
-permutations = 0
+permutations = 0 # obsolete
 testBoard = []
 
 ###### FUNCTIONS ######
 
-def checkIfFull(sampleBoard):
+def checkIfFull(sampleBoard): # checks if the whole board is full, if so returns True, if not it returns False.
     notFull = True
     sampleBoardCopy = sampleBoard
     #print(sampleBoardCopy)
@@ -61,11 +61,12 @@ def mapVariations(board, mapTeam, runDepth): # calculates every possible next mo
     runDepthCopy = runDepth
     
     boardCopy = copy.deepcopy(board)
+    pathToBranch = gameIndexLibrary[gameStateLibrary.index(boardCopy)]
 
     for testCol in range(7): # runs across every column
 
         testBoard = boardCopy
-        pathToBranchCopy = pathToBranch
+        pathToBranchCopy = pathToBranch # creates a copy of the current branch (current path stores the directions to the parent moves, copy will store path to children)
 
         if checkIfFull(testBoard) == False: # if the board is full, don't run this bit
             
