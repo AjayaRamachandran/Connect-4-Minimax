@@ -4,10 +4,17 @@ import time
 import copy
 
 ###### VARIABLES ######
-simLevel = 4
+simLevel = 7
 treeCoords = None
-gameStateLibrary = [[]]
+gameStateLibrary = []
+gameIndexLibrary = []
+gameDepthLibrary = []
+
+bufferLevel = []
+oldBufferLevel = []
+
 nodeDepth = 0
+pathToBranch = 0
 permutations = 0
 testBoard = []
 
@@ -16,6 +23,7 @@ testBoard = []
 def checkIfFull(sampleBoard):
     notFull = True
     sampleBoardCopy = sampleBoard
+    #print(sampleBoardCopy)
 
     for column in sampleBoardCopy:
         for row in column:
@@ -49,18 +57,26 @@ def simAddCoin(column, variation, team): # simulates the placing of a coin in a 
 
 
 def mapVariations(board, mapTeam, runDepth): # calculates every possible next move given a board state
-    global permutations
     mapTeamCopy = mapTeam
     runDepthCopy = runDepth
+    
     boardCopy = copy.deepcopy(board)
 
-    for testCol in range(0,7): # runs across every column
+    for testCol in range(7): # runs across every column
+
         testBoard = boardCopy
+        pathToBranchCopy = pathToBranch
+
         if checkIfFull(testBoard) == False: # if the board is full, don't run this bit
             simState = simAddCoin(column=testCol, variation=testBoard, team=mapTeamCopy) # runs the simAddCoin functions for every column
+
             if not simState == "fail": # excludes columns where the next move would exit the top of the board
-                permutations += 1
-                gameStateLibrary[nodeDepth + 1].append(simState) # appends the simState to the library, inside the next nodeDepth
+
+                pathToBranchCopy = str(pathToBranchCopy) + str(testCol)
+
+                gameStateLibrary.append(simState) # appends the simState to the library
+                gameIndexLibrary.append(pathToBranchCopy)
+                gameDepthLibrary.append(runDepthCopy)
  
 
 
@@ -68,10 +84,14 @@ def simulate(depth): # runs the mapVariations functions for every board state in
     #global testBoard
     global nodeDepth
     global gameStateLibrary
+    global bufferLevel
 
-    gameStateLibrary.append([]) # appends a placeholder in the position of the next nodeDepth
+    for version in range(len(gameStateLibrary)):
+        if gameDepthLibrary[version] == nodeDepth-1:
+            bufferLevel.append(copy.deepcopy(gameStateLibrary[version]))
 
-    for variation in gameStateLibrary[nodeDepth]:
+
+    for variation in bufferLevel:
 
         if depth % 2 == 0:
             simTeam = "ai"
@@ -79,33 +99,53 @@ def simulate(depth): # runs the mapVariations functions for every board state in
             simTeam = "player"
 
         mapVariations(board=variation, mapTeam=simTeam, runDepth=nodeDepth) # runs the mapVariations function if the simLevel limit is not reached
+    
+    #oldBufferLevel = copy.deepcopy(bufferLevel)
+    bufferLevel = []
 
 
 
 def simulateTree(): # head function for branch simulation
     global nodeDepth
     nodeDepth = 0
-    for nodeDepth in range(simLevel): # runs the simulate function for every nodeDepth to the limit
+    for depth in range(simLevel): # runs the simulate function for every nodeDepth to the limit
+        nodeDepth = depth + 1
         simulate(depth=nodeDepth)
 
 
 
 def aiTest(board): # master function, cues tree simulation and minimax algorithm
     global gameStateLibrary
+    global gameIndexLibrary
+    global gameDepthLibrary
+    global pathToBranch
     global permutations
 
-    permutations = 0
+    #permutations = 0
 
-    gameStateLibrary = [[]]
-    boardCopy = board
-    gameStateLibrary[0].append(boardCopy) # primes simulation with zeroeth nodeDepth, which is the current board state
+
+    boardCopy = copy.deepcopy(board)
+    pathToBranch = None
+    gameStateLibrary.append(boardCopy) # primes simulation with initial state, which is the current board state
+    #bufferLevel.append(boardCopy) # sets the current board state to the only object within the current buffer, which is access when making variations
+
+
+
+    gameIndexLibrary.append(0)
+    gameDepthLibrary.append(0)
     
     simulateTree()
+    print(len(gameIndexLibrary))
+
+
+    gameStateLibrary = []
+    gameIndexLibrary = []
+    gameDepthLibrary = []
 
     aiMove = rand.randint(0,6) # test
 
     time.sleep(0.2)
-    print(permutations)
+    #print(permutations)
     return(aiMove)
 
 
