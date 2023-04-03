@@ -4,20 +4,21 @@ import time
 import copy
 
 ###### VARIABLES ######
-simLevel = 6
+simLevel = 5
 treeCoords = None
 gameStateLibrary = []
 gameIndexLibrary = []
 gameDepthLibrary = []
 
 bufferLevel = []
-oldBufferLevel = []
+bufferPaths = []
 
 nodeDepth = 0
 pathToBranch = 0
 permutations = 0
 testBoard = []
 
+pathToBranch = None
 ###### FUNCTIONS ######
 
 def checkIfFull(sampleBoard):
@@ -56,9 +57,11 @@ def simAddCoin(column, variation, team): # simulates the placing of a coin in a 
 
 
 
-def mapVariations(board, mapTeam, runDepth): # calculates every possible next move given a board state
+def mapVariations(board, mapTeam, runDepth, path): # calculates every possible next move given a board state
     mapTeamCopy = mapTeam
     runDepthCopy = runDepth
+    global pathToBranch
+    pathToBranch = path
     
     boardCopy = copy.deepcopy(board)
 
@@ -74,7 +77,10 @@ def mapVariations(board, mapTeam, runDepth): # calculates every possible next mo
 
             if not simState == "fail": # excludes columns where the next move would exit the top of the board
 
-                pathToBranchCopy = str(pathToBranchCopy) + str(testCol)
+                if str(pathToBranchCopy) == "None":
+                    pathToBranchCopy = str(testCol)
+                else:
+                    pathToBranchCopy = str(pathToBranchCopy) + str(testCol)
 
                 gameStateLibrary.append(simState) # appends the simState to the library
                 gameIndexLibrary.append(pathToBranchCopy)
@@ -87,20 +93,25 @@ def simulate(depth): # runs the mapVariations functions for every board state in
     global nodeDepth
     global gameStateLibrary
     global bufferLevel
+    global bufferPaths
 
     for version in range(len(gameStateLibrary)):
         if gameDepthLibrary[version] == nodeDepth-1:
             bufferLevel.append(copy.deepcopy(gameStateLibrary[version]))
+            bufferPaths.append(gameIndexLibrary[version])
 
 
-    for variation in bufferLevel:
+    for variation in range(len(bufferLevel)):
+        currentLevel = bufferLevel[variation]
+        currentPath = bufferPaths[variation]
 
         if depth % 2 == 0:
             simTeam = "ai"
         else:
             simTeam = "player"
+        
 
-        mapVariations(board=variation, mapTeam=simTeam, runDepth=nodeDepth) # runs the mapVariations function if the simLevel limit is not reached
+        mapVariations(board=currentLevel, mapTeam=simTeam, runDepth=nodeDepth, path=currentPath) # runs the mapVariations function if the simLevel limit is not reached
     
     #oldBufferLevel = copy.deepcopy(bufferLevel)
     bufferLevel = []
@@ -138,6 +149,7 @@ def aiTest(board): # master function, cues tree simulation and minimax algorithm
     
     simulateTree()
     print(len(gameIndexLibrary))
+    #print(gameIndexLibrary)
 
 
     gameStateLibrary = []
