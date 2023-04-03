@@ -167,14 +167,30 @@ def aiTest(board): # master function, cues tree simulation and minimax algorithm
 def aiPlay():
     time.sleep(0)
 
+
 ###### PSEUDOCODE ######
 
-# spawns a simulation agent (which recursively spawns 7 more, etc.)
+#    recursively creates generations of simulation, using all the elements of the previous simulation as reference points
 
-# once simulation is finished, the scoring script runs through every end state and assigns a numerical score (my score - opp score)
+#    with each new generation's element, a numerical "tag" identifier is attached, which is used to find specific game
+#    states in the future based on moves used to get there
 
-# minimax algorithm then runs, working its way up the tree until all 7 choices have a score assigned
+#    all "bottom-rung" game states (max moves used to get there) are then scored on how beneficial they are using some
+#    weightages
 
-# chooses the highest score (technically part of minimax)
+#    once every bottom-rung game state is scored, the minimax algorithm is applied, and traced back up to the top to pick
+#    the next best move
 
-# returns choice to main
+
+
+###### MONTE CARLO SIMULATION NOTES ######
+
+#    scoring function uses a heuristic method with a specific heuristic value, which is determined by the types of situations
+#    present in the game state
+
+#    most methods online use an arbitrary method of determining the heuristic value, from power-systems (2^length of stack) and
+#    such. to make the best of the limited searchability this algorithm has, I will employ a monte-carlo simulation with
+#    hundreds of bots playing thousands of games with one another, which will affect the prime weightages if they win.
+
+#    using a simulation to methodically converge upon the heuristic weights as opposed to choosing an arbitrary heuristic
+#    function should make the bots as effective as possible with their limited search range
