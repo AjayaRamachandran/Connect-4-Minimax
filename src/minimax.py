@@ -2,16 +2,17 @@
 import random as rand
 import time
 import copy
+import windetection
 
 ###### VARIABLES ######
-simLevel = 5
+simLevel = 2
 treeCoords = None
-gameStateLibrary = []
-gameIndexLibrary = []
-gameDepthLibrary = []
+gameStateLibrary = [] # large list of all possible game states, simulated from current state
+gameIndexLibrary = [] # paired large list of game indexes (string of moves made to get there)
+gameDepthLibrary = [] # paired large list of game depths, for easy searching through depth levels later
 
-bufferLevel = []
-bufferPaths = []
+gameStatesOfDepth = []
+gameIndexesOfDepth = []
 
 nodeDepth = 0
 pathToBranch = 0
@@ -22,16 +23,16 @@ pathToBranch = None
 ###### FUNCTIONS ######
 
 def checkIfFull(sampleBoard):
-    notFull = True
-    sampleBoardCopy = sampleBoard
+    full = True
+    sampleBoardCopy = copy.deepcopy(sampleBoard)
     #print(sampleBoardCopy)
 
     for column in sampleBoardCopy:
         for row in column:
             if row == 0:
-                notFull = False
+                full = False
 
-    return(notFull)
+    return(full)
 
 
 
@@ -39,127 +40,93 @@ def simAddCoin(column, variation, team): # simulates the placing of a coin in a 
     simheight = 5
     variationCopy = copy.deepcopy(variation)
     columnCopy = column
-    teamCopy = team
+    teamCopy = int(team)
 
     if variationCopy[columnCopy][simheight] == 0: 
         while variationCopy[columnCopy][simheight - 1] == 0 and not simheight == 0: # repeatedly checks in downward succession for the first filled coin of the column, akin to gravity
             simheight -= 1
-
-        if teamCopy == "player":
-            variationCopy[columnCopy][simheight] = 1 # fill said slot with red piece
-        elif teamCopy == "ai":
-            variationCopy[columnCopy][simheight] = 2 # fill said slot with yellow piece
-
+        variationCopy[columnCopy][simheight] = teamCopy # fill said slot with red or yellow piece based on whose turn it is
 
         return(variationCopy) # returns success/fail based on whether the slot is a valid move
     else:
         return("fail") # if added coin is in an already full column, it cannot be placed, so function returns "fail"
 
 
-
-def mapVariations(board, mapTeam, runDepth, path): # calculates every possible next move given a board state
-    mapTeamCopy = mapTeam
-    runDepthCopy = runDepth
-    global pathToBranch
-    pathToBranch = path
-    
-    boardCopy = copy.deepcopy(board)
-
+def simulateChildren(state, team, depth):
+    boardCopy = copy.deepcopy(state)
+    children = []
     for testCol in range(7): # runs across every column
-
-        testBoard = boardCopy
-        pathToBranchCopy = pathToBranch
-
+        testBoard = copy.deepcopy(boardCopy)
         if checkIfFull(testBoard) == False: # if the board is full, don't run this bit
-            
-            simState = simAddCoin(column=testCol, variation=testBoard, team=mapTeamCopy) # runs the simAddCoin functions for every column
-            #print(simState)
-
+            simState = simAddCoin(column=testCol, variation=testBoard, team=team) # runs the simAddCoin functions for every column
             if not simState == "fail": # excludes columns where the next move would exit the top of the board
+                score = windetection.mainRun(simState)
+                children.append(copy.deepcopy(simState))
+                if depth == 0:
+                    listOfChildrenColumns.append(testCol)
+                    listOfChildrenScores.append(score)
 
-                if str(pathToBranchCopy) == "None":
-                    pathToBranchCopy = str(testCol)
-                else:
-                    pathToBranchCopy = str(pathToBranchCopy) + str(testCol)
-
-                gameStateLibrary.append(simState) # appends the simState to the library
-                gameIndexLibrary.append(pathToBranchCopy)
-                gameDepthLibrary.append(runDepthCopy)
- 
-
-
-def simulate(depth): # runs the mapVariations functions for every board state in a certain nodeDepth
-    #global testBoard
-    global nodeDepth
-    global gameStateLibrary
-    global bufferLevel
-    global bufferPaths
-
-    for version in range(len(gameStateLibrary)):
-        if gameDepthLibrary[version] == nodeDepth-1:
-            bufferLevel.append(copy.deepcopy(gameStateLibrary[version]))
-            bufferPaths.append(gameIndexLibrary[version])
-
-
-    for variation in range(len(bufferLevel)):
-        currentLevel = bufferLevel[variation]
-        currentPath = bufferPaths[variation]
-
-        if depth % 2 == 0:
-            simTeam = "ai"
-        else:
-            simTeam = "player"
-        
-
-        mapVariations(board=currentLevel, mapTeam=simTeam, runDepth=nodeDepth, path=currentPath) # runs the mapVariations function if the simLevel limit is not reached
+            #print(simState)
     
-    #oldBufferLevel = copy.deepcopy(bufferLevel)
-    bufferLevel = []
+    return children
 
 
+def minimax(state, depth, alpha, beta, maximizingPlayer):
+    global iters
+    iters += 1
+    gameState = copy.deepcopy(state)
+    #print(gameState)
 
-def simulateTree(): # head function for branch simulation
-    global nodeDepth
-    nodeDepth = 0
-    for depth in range(simLevel): # runs the simulate function for every nodeDepth to the limit
-        nodeDepth = depth + 1
-        simulate(depth=nodeDepth)
+    if depth == simLevel or windetection.mainRun(gameState) != 0:
+        return windetection.mainRun(gameState)
+    
+    if maximizingPlayer:
+        maxEval = -100000
+        for child in simulateChildren(gameState, depth % 2 == 0, depth):
+            #print(child)
+            eval = minimax(child, depth+1, alpha, beta, False)
+            maxEval = max(maxEval, eval)
+            alpha = max(alpha, eval)
+            if beta <= alpha:
+                break
+        return maxEval
+    
+    else:
+        minEval = 100000
+        for child in simulateChildren(gameState, depth % 2 == 0, depth):
+            #print(child)
+            eval = minimax(child, depth+1, alpha, beta, True)
+            minEval = min(minEval, eval)
+            beta = min(beta, eval)
+            if beta <= alpha:
+                break
+        return minEval
+    
+
 
 
 
 def aiTest(board): # master function, cues tree simulation and minimax algorithm
-    global gameStateLibrary
-    global gameIndexLibrary
-    global gameDepthLibrary
-    global pathToBranch
-    global permutations
-
-    #permutations = 0
-
+    global boardCopy
+    global listOfChildrenColumns
+    global listOfChildrenScores
+    global iters
 
     boardCopy = copy.deepcopy(board)
-    pathToBranch = None
-    gameStateLibrary.append(boardCopy) # primes simulation with initial state, which is the current board state
-    #bufferLevel.append(boardCopy) # sets the current board state to the only object within the current buffer, which is access when making variations
+    listOfChildrenColumns = []
+    listOfChildrenScores = []
+    iters = 0
+    minimax(boardCopy, 0, -100000, 100000, False)
+    print(iters)
+    print(listOfChildrenScores)
+    if len(listOfChildrenScores) > 0:
+        aiMove = listOfChildrenColumns[listOfChildrenScores.index(max(listOfChildrenScores))]
+    else:
+        aiMove = "None"
 
 
+    #aiMove = rand.randint(0,6) # test
 
-    gameIndexLibrary.append(0)
-    gameDepthLibrary.append(0)
-    
-    #simulateTree()
-    #print(len(gameIndexLibrary))
-    #print(gameIndexLibrary)
-
-
-    gameStateLibrary = []
-    gameIndexLibrary = []
-    gameDepthLibrary = []
-
-    aiMove = rand.randint(0,6) # test
-
-    #time.sleep(0.2)
-    #print(permutations)
     return(aiMove)
 
 

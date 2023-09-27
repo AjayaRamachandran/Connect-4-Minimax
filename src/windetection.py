@@ -68,18 +68,18 @@ def checkforPoints(mType, mSize, team): # function to oversee the convolution of
     return score
 
 
-def runCheck(winWeight, thrStkWeight): # function to oversee the full-board convolution of all different checking Matrices
+def runCheck(playerWinWeight, aiWinWeight, thrStkWeight): # function to oversee the full-board convolution of all different checking Matrices
 
     boardScore = 0
-    boardScore += (checkforPoints(mType = winMatrix1, mSize = 4, team = 1)) * winWeight
-    boardScore += (checkforPoints(mType = winMatrix2, mSize = 4, team = 1)) * winWeight
-    boardScore += (checkforPoints(mType = winMatrix3, mSize = 4, team = 1)) * winWeight
-    boardScore += (checkforPoints(mType = winMatrix4, mSize = 4, team = 1)) * winWeight # runs the checkForPoints function for every possible configuration of a win on red
+    boardScore += (checkforPoints(mType = winMatrix1, mSize = 4, team = 1)) * playerWinWeight
+    boardScore += (checkforPoints(mType = winMatrix2, mSize = 4, team = 1)) * playerWinWeight
+    boardScore += (checkforPoints(mType = winMatrix3, mSize = 4, team = 1)) * playerWinWeight
+    boardScore += (checkforPoints(mType = winMatrix4, mSize = 4, team = 1)) * playerWinWeight # runs the checkForPoints function for every possible configuration of a win on red
 
-    boardScore -= (checkforPoints(mType = winMatrix1, mSize = 4, team = 2)) * winWeight
-    boardScore -= (checkforPoints(mType = winMatrix2, mSize = 4, team = 2)) * winWeight
-    boardScore -= (checkforPoints(mType = winMatrix3, mSize = 4, team = 2)) * winWeight
-    boardScore -= (checkforPoints(mType = winMatrix4, mSize = 4, team = 2)) * winWeight # runs the checkForPoints function for every possible configuration of a win on yellow
+    boardScore -= (checkforPoints(mType = winMatrix1, mSize = 4, team = 2)) * aiWinWeight
+    boardScore -= (checkforPoints(mType = winMatrix2, mSize = 4, team = 2)) * aiWinWeight
+    boardScore -= (checkforPoints(mType = winMatrix3, mSize = 4, team = 2)) * aiWinWeight
+    boardScore -= (checkforPoints(mType = winMatrix4, mSize = 4, team = 2)) * aiWinWeight # runs the checkForPoints function for every possible configuration of a win on yellow
 
     return boardScore
 
@@ -93,7 +93,7 @@ def mainRun(wcBoard): # master function to oversee all function operations (unne
     #start = time.time()
     global myboard
     myboard = copy.deepcopy(wcBoard) # creates a deepcopy of the passed board to avoid editing the original
-    boardScore = runCheck(winWeight=1, thrStkWeight=0)
+    boardScore = runCheck(playerWinWeight= 1, aiWinWeight = 1, thrStkWeight=0)
     #print(time.time() - start)
 
     #print(wcBoard)

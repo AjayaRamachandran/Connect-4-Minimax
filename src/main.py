@@ -80,7 +80,8 @@ def renderNextCoin():
 
 def aiTurn(): # outsources actual ai play to the minimax module "minimax.py"
     dropColumn = minimax.aiTest(board=gameBoard)
-    addCoin(team="ai", column=dropColumn)
+    if dropColumn != "None":
+        addCoin(team="ai", column=dropColumn)
 
 
 def runTime(mouseClicked): # part of the game loop that runs always, even if the mouse is clicked
