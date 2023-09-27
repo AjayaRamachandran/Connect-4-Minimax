@@ -15,9 +15,9 @@ The module `minimax.py` contained within this program features an implementation
 ### 4. Alpha-Beta Pruning
 The module `minimax.py` also contains an implementation of the alpha-beta pruning optimization, which allows the algorithm to simulate far less of the tree than without.
 
-|                              |Iterations    |Time           |
-|---                           |---           |---            |
-|Crude Minimax (depth: 5)      |approx. 90k   |approx. 15 sec |
-|Crude Minimax (depth: 3)      |approx. 2k    |approx. 1 sec  |
-|Minimax w/AB pruning (d: 5)   |approx. 200   |approx. 0.1 sec|
-|Minimax w/AB pruning (d: 3)   |approx. 125   |approx. instant|
+|                              |Iterations    |Time (w/ Win Detection)|
+|---                           |---           |---                    |
+|Crude Minimax (depth: 5)      |approx. 90k   |approx. 15 sec         |
+|Crude Minimax (depth: 3)      |approx. 2k    |approx. 1 sec          |
+|Minimax w/AB pruning (d: 5)   |approx. 200   |approx. 0.1 sec        |
+|Minimax w/AB pruning (d: 3)   |approx. 125   |approx. instant        |
