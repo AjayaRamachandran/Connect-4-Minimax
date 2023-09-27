@@ -1,5 +1,5 @@
 # Connect-4-Minimax
-A Connect Four program and bot that uses a variation of the minimax algorithm to play the game.
+#### A Connect Four program and bot that uses a variation of the minimax algorithm to play the game.
 ---
 
 ## Hallmark Features
@@ -16,6 +16,7 @@ The module `minimax.py` contained within this program features an implementation
 The module `minimax.py` also contains an implementation of the alpha-beta pruning optimization, which allows the algorithm to simulate far less of the tree than without.
 
 |                              |Iterations    |Time           |
-|Crude Minimax (depth: 5)      |approx. 90k   |approx. 4 sec  |
-|Crude Minimax (depth: 3)      |approx. 2k    |approx. 0.3 sec|
-|Minimax w/AB pruning (d: 5)
+|Crude Minimax (depth: 5)      |approx. 90k   |approx. 15 sec |
+|Crude Minimax (depth: 3)      |approx. 2k    |approx. 1 sec  |
+|Minimax w/AB pruning (d: 5)   |approx. 200   |approx. 0.1 sec|
+|Minimax w/AB pruning (d: 3)   |approx. 125   |approx. instant|
