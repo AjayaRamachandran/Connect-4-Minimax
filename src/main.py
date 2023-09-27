@@ -25,15 +25,13 @@ coinColor2 = (255, 255, 0)
 boardColor = (0, 0, 255)
 emptyColor = (0, 0, 0)
 
-fps = 144
+fps = 60
 clock = pygame.time.Clock()
 
 gameBoard = [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]
 bhe = 70 # board horizontal edges, recorded in pixels from edge
 bve = 100 # board vertical edges, recorded in pixels from edge
 
-
-#pygame.display.set_icon(None)
 
 ###### CLASSES ######
 class Background:
@@ -75,30 +73,21 @@ def addCoin(team, column): # function to refresh the board after a player/oppone
     else:
         return("fail")
 
+
 def renderNextCoin():
     pygame.draw.circle(screen, coinColor1, (graphicsDropX, 60), 15, 0) # renders a preview coin where the mouse is hovering
 
+
 def aiTurn(): # outsources actual ai play to the minimax module "minimax.py"
-    #global dropColumn
-
-    #time.sleep(1) # just for testing
     dropColumn = minimax.aiTest(board=gameBoard)
-    #dropColumn = minimax.aiPlay()
-
     addCoin(team="ai", column=dropColumn)
-    time.sleep(0.3)
 
 
+def runTime(mouseClicked): # part of the game loop that runs always, even if the mouse is clicked
+    global clickedStatus, graphicsDropX, dropColumn
 
-###### MAINLOOP ######
-running = True # Runs the game loop
-while running:
     screen.fill(emptyColor)
     drawBoard()
-
-    for event in pygame.event.get(): # Checks if program is quit, if so stops the code
-        if event.type == pygame.QUIT:
-            running = False
 
     if clickedStatus == 0: # if the turn has yet to be played, then the next coin will follow the mouse x until mouse clicked
         tempDropX = round((pygame.mouse.get_pos()[0]) / 50) * 50
@@ -114,24 +103,45 @@ while running:
 
         renderNextCoin()
         
-        if pygame.mouse.get_pressed(num_buttons=3)[0] == 1: # if the mouse is pressed, change click status to turn can play out
-            if addCoin(team="player", column=dropColumn) == "success": # only processes as a valid move if "success" returns
-                drawBoard()
-                pygame.display.update()
-                
-                clickedStatus = 1
-
-
-
-    if clickedStatus == 1: # if player has played a valid move, then ai responds
-        aiTurn()
-        clickedStatus = 0
+        if mouseClicked == 1:
+            if pygame.mouse.get_pressed(num_buttons=3)[0] == 1: # if the mouse is pressed, change click status to turn can play out
+                None
 
     # runs framerate wait time
     clock.tick(fps)
     # Update the screen
     pygame.display.update()
 
+
+###### MAINLOOP ######
+running = True # Runs the game loop
+while running:
+    runTime(0)
+    for event in pygame.event.get(): # Checks if program is quit, if so stops the code
+        if event.type == pygame.QUIT:
+            running = False
+
+    # if player has clicked ther mouse, we run a varied version of the gameloop until they have let go of their mouse.
+    # normally, the gameloop will check to see if the mouse is pressed and if so place a coin, but we run the gameloop without this.
+    # previously, this was a time.sleep() function but that causes the whole program to freeze for a second and is very annoying.
+    # now, we're essentially waiting for the mouse to unpress WHILE KEEPING THE GAMELOOP RUNNING.
+    if pygame.mouse.get_pressed(num_buttons=3)[0] == 1:
+        while pygame.mouse.get_pressed(num_buttons=3)[0] == 1:
+            runTime(1)
+
+            for event in pygame.event.get(): # Checks if program is quit, if so stops the code
+                if event.type == pygame.QUIT:
+                    running = False
+        
+        if addCoin(team="player", column=dropColumn) == "success": # only processes as a valid move if "success" returns
+            aiTurn()
+            drawBoard()
+            
+            print(windetection.mainRun(gameBoard))
+            #windetection.mainRun(gameBoard)
+            #windetection.detectMatrixMatch(col = 0, row = 2, mSize = 4, team = 2)
+        
+            
 # Quit Pygame
 pygame.quit()
 
