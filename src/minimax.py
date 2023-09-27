@@ -60,9 +60,9 @@ def simulateChildren(state, team, depth):
         if checkIfFull(testBoard) == False: # if the board is full, don't run this bit
             simState = simAddCoin(column=testCol, variation=testBoard, team=team) # runs the simAddCoin functions for every column
             if not simState == "fail": # excludes columns where the next move would exit the top of the board
-                score = windetection.mainRun(simState)
                 children.append(copy.deepcopy(simState))
                 if depth == 0:
+                    score = windetection.mainRun(simState)
                     listOfChildrenColumns.append(testCol)
                     listOfChildrenScores.append(score)
 
@@ -77,7 +77,7 @@ def minimax(state, depth, alpha, beta, maximizingPlayer):
     gameState = copy.deepcopy(state)
     #print(gameState)
 
-    if depth == simLevel or windetection.mainRun(gameState) != 0:
+    if depth == simLevel or gameOver:
         return windetection.mainRun(gameState)
     
     if maximizingPlayer:
@@ -111,11 +111,13 @@ def aiTest(board): # master function, cues tree simulation and minimax algorithm
     global listOfChildrenColumns
     global listOfChildrenScores
     global iters
+    global gameOver
 
     boardCopy = copy.deepcopy(board)
     listOfChildrenColumns = []
     listOfChildrenScores = []
     iters = 0
+    gameOver = windetection.mainRun(gameState) != 0
     minimax(boardCopy, 0, -100000, 100000, False)
     print(iters)
     print(listOfChildrenScores)
