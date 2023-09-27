@@ -122,7 +122,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # if player has clicked ther mouse, we run a varied version of the gameloop until they have let go of their mouse.
+    # if player has clicked their mouse, we run a varied version of the gameloop until they have let go of their mouse.
     # normally, the gameloop will check to see if the mouse is pressed and if so place a coin, but we run the gameloop without this.
     # previously, this was a time.sleep() function but that causes the whole program to freeze for a second and is very annoying.
     # now, we're essentially waiting for the mouse to unpress WHILE KEEPING THE GAMELOOP RUNNING.
