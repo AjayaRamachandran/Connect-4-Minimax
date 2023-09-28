@@ -48,9 +48,7 @@ def simulateChildren(state, team, depth):
             if not simState == "fail": # excludes columns where the next move would exit the top of the board
                 children.append(copy.deepcopy(simState))
                 if depth == 0:
-                    score = windetection.mainRun(simState)
                     listOfChildrenColumns.append(testCol)
-                    listOfChildrenScores.append(score)
     
     return children
 
@@ -88,6 +86,8 @@ def minimax(state, depth, alpha, beta, maximizingPlayer):
             beta = min(beta, eval)
             if beta <= alpha:
                 break
+            if depth == 0:
+                listOfChildrenScores.append(minEval)
         return minEval
     
 
