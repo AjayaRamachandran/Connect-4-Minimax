@@ -93,7 +93,7 @@ def mainRun(wcBoard): # master function to oversee all function operations (unne
     #start = time.time()
     global myboard
     myboard = copy.deepcopy(wcBoard) # creates a deepcopy of the passed board to avoid editing the original
-    boardScore = runCheck(playerWinWeight= 1, aiWinWeight = 1, thrStkWeight=0)
+    boardScore = runCheck(playerWinWeight= 2, aiWinWeight = 1, thrStkWeight=0)
     #print(time.time() - start)
 
     #print(wcBoard)

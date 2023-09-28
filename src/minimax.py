@@ -61,8 +61,8 @@ def minimax(state, depth, alpha, beta, maximizingPlayer):
     gameState = copy.deepcopy(state)
     gameOver = (windetection.mainRun(gameState) != 0)
 
+    
     if depth == simLevel or gameOver:
-        print(windetection.mainRun(gameState))
         return windetection.mainRun(gameState)
     
     if maximizingPlayer:
@@ -71,6 +71,7 @@ def minimax(state, depth, alpha, beta, maximizingPlayer):
         for child in family:
             #print(child)
             eval = minimax(child, depth+1, alpha, beta, False)
+            #print(str(eval) + "lvl" + str(depth))
             maxEval = max(maxEval, eval)
             alpha = max(alpha, eval)
             if beta <= alpha:
@@ -82,6 +83,7 @@ def minimax(state, depth, alpha, beta, maximizingPlayer):
         for child in family:
             #print(child)
             eval = minimax(child, depth+1, alpha, beta, True)
+            #print(str(eval) + "lvl" + str(depth))
             minEval = min(minEval, eval)
             beta = min(beta, eval)
             if beta <= alpha:
