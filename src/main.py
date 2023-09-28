@@ -135,8 +135,9 @@ while running:
                     running = False
         
         if addCoin(team="player", column=dropColumn) == "success": # only processes as a valid move if "success" returns
-            aiTurn()
             drawBoard()
+            pygame.display.update()
+            aiTurn()
             
             print(windetection.mainRun(gameBoard))
             #windetection.mainRun(gameBoard)

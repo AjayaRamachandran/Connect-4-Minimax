@@ -5,27 +5,13 @@ import copy
 import windetection
 
 ###### VARIABLES ######
-simLevel = 2
-treeCoords = None
-gameStateLibrary = [] # large list of all possible game states, simulated from current state
-gameIndexLibrary = [] # paired large list of game indexes (string of moves made to get there)
-gameDepthLibrary = [] # paired large list of game depths, for easy searching through depth levels later
-
-gameStatesOfDepth = []
-gameIndexesOfDepth = []
-
-nodeDepth = 0
-pathToBranch = 0
-permutations = 0
+simLevel = 4
 testBoard = []
 
-pathToBranch = None
 ###### FUNCTIONS ######
-
 def checkIfFull(sampleBoard):
     full = True
     sampleBoardCopy = copy.deepcopy(sampleBoard)
-    #print(sampleBoardCopy)
 
     for column in sampleBoardCopy:
         for row in column:
@@ -33,7 +19,6 @@ def checkIfFull(sampleBoard):
                 full = False
 
     return(full)
-
 
 
 def simAddCoin(column, variation, team): # simulates the placing of a coin in a certain column then returns the new gameState
@@ -55,6 +40,7 @@ def simAddCoin(column, variation, team): # simulates the placing of a coin in a 
 def simulateChildren(state, team, depth):
     boardCopy = copy.deepcopy(state)
     children = []
+
     for testCol in range(7): # runs across every column
         testBoard = copy.deepcopy(boardCopy)
         if checkIfFull(testBoard) == False: # if the board is full, don't run this bit
@@ -65,8 +51,6 @@ def simulateChildren(state, team, depth):
                     score = windetection.mainRun(simState)
                     listOfChildrenColumns.append(testCol)
                     listOfChildrenScores.append(score)
-
-            #print(simState)
     
     return children
 
@@ -75,14 +59,16 @@ def minimax(state, depth, alpha, beta, maximizingPlayer):
     global iters
     iters += 1
     gameState = copy.deepcopy(state)
-    #print(gameState)
+    gameOver = (windetection.mainRun(gameState) != 0)
 
     if depth == simLevel or gameOver:
+        print(windetection.mainRun(gameState))
         return windetection.mainRun(gameState)
     
     if maximizingPlayer:
         maxEval = -100000
-        for child in simulateChildren(gameState, depth % 2 == 0, depth):
+        family = simulateChildren(gameState, ((depth % 2 == 0) + 1), depth)
+        for child in family:
             #print(child)
             eval = minimax(child, depth+1, alpha, beta, False)
             maxEval = max(maxEval, eval)
@@ -90,10 +76,10 @@ def minimax(state, depth, alpha, beta, maximizingPlayer):
             if beta <= alpha:
                 break
         return maxEval
-    
     else:
         minEval = 100000
-        for child in simulateChildren(gameState, depth % 2 == 0, depth):
+        family = simulateChildren(gameState, ((depth % 2 == 0) + 1), depth)
+        for child in family:
             #print(child)
             eval = minimax(child, depth+1, alpha, beta, True)
             minEval = min(minEval, eval)
@@ -103,34 +89,27 @@ def minimax(state, depth, alpha, beta, maximizingPlayer):
         return minEval
     
 
-
-
-
 def aiTest(board): # master function, cues tree simulation and minimax algorithm
     global boardCopy
     global listOfChildrenColumns
     global listOfChildrenScores
     global iters
-    global gameOver
 
     boardCopy = copy.deepcopy(board)
     listOfChildrenColumns = []
     listOfChildrenScores = []
     iters = 0
-    gameOver = windetection.mainRun(gameState) != 0
+
     minimax(boardCopy, 0, -100000, 100000, False)
     print(iters)
     print(listOfChildrenScores)
+
     if len(listOfChildrenScores) > 0:
-        aiMove = listOfChildrenColumns[listOfChildrenScores.index(max(listOfChildrenScores))]
+        aiMove = listOfChildrenColumns[listOfChildrenScores.index(min(listOfChildrenScores))]
     else:
         aiMove = "None"
-
-
     #aiMove = rand.randint(0,6) # test
-
     return(aiMove)
-
 
 
 def aiPlay():
