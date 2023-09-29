@@ -3,9 +3,10 @@ import random as rand
 import time
 import copy
 import windetection
+from math import *
 
 ###### VARIABLES ######
-simLevel = 4
+simLevel = 5
 testBoard = []
 
 ###### FUNCTIONS ######
@@ -41,7 +42,8 @@ def simulateChildren(state, team, depth):
     boardCopy = copy.deepcopy(state)
     children = []
 
-    for testCol in range(7): # runs across every column
+    for iter in range(7): # runs across every column
+        testCol = int(4 + (((iter % 2 - 0.5) * 2) * round(iter / 2 + 0.1))) - 1
         testBoard = copy.deepcopy(boardCopy)
         if checkIfFull(testBoard) == False: # if the board is full, don't run this bit
             simState = simAddCoin(column=testCol, variation=testBoard, team=team) # runs the simAddCoin functions for every column
