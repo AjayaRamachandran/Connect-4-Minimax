@@ -143,11 +143,5 @@ while running:
             #windetection.mainRun(gameBoard)
             #windetection.detectMatrixMatch(col = 0, row = 2, mSize = 4, team = 2)
         
-            
 # Quit Pygame
 pygame.quit()
-
-
-
-
-
