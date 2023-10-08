@@ -60,8 +60,8 @@ def detectMatrixMatch(filteredCutout, winMatrix, mSize): # function for checking
 
 def checkforPoints(mType, mSize, team): # function to oversee the convolution of a single matrix at all locations on the board
     score = 0
-    for row in range(len(myboard)):
-        for column in range(len(myboard[row])):
+    for row in range(len(myboard[0])):
+        for column in range(len(myboard)):
             filteredMatrix = takeGameCutout(col = column, row = row, mSize = mSize, team = team)
             score += detectMatrixMatch(filteredCutout = filteredMatrix, winMatrix = mType, mSize = mSize)
     
