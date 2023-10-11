@@ -9,91 +9,73 @@ import time
 myboard = []
 boardScore = 0
 
-## Matrices with checkable arrangements
-winMatrix1 = [[1,1,1,1]] # vertical win
-winMatrix2 = [[1],[1],[1],[1]] # horizontal win
-winMatrix3 = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]] # LeftDown RightUp diagonal win
-winMatrix4 = [[0,0,0,1],[0,0,1,0],[0,1,0,0],[1,0,0,0]] # LeftUp RightDown diagonal win
-
-threeStkMatrix1 = [[1,1,1]] # vertical 3-stack
-threeStkMatrix2 = [[1],[1],[1]] # horizontal 3-stack
-threeStkMatrix3 = [[1,0,0],[0,1,0],[0,0,1]] # LeftDown RightUp diagonal 3-stack
-threeStkMatrix4 = [[0,0,1],[0,1,0],[1,0,0]] # LeftUp RightDown diagonal 3-stack
+# winType = 1, 2, 3, 4 correspond to vertical, horizontal, LDRU diagonal, LURD diagonal wins respectively
 
 ###### FUNCTIONS ######
-def takeGameCutout(col, row, xSize, ySize, team):
-    gameBoardCutout = []
 
-    for Xoffset in range(0, xSize): # takes a cutout of the game board of a certain size at a specific location for examining
-        columnOfGameBoardCutout = []
-        #columnOfGameBoardCutout.append(myboard[col+Xoffset][row])
-        for Yoffset in range(0, ySize):
-            if row + Yoffset <= 5 and col + Xoffset <= 6:
-                columnOfGameBoardCutout.append(myboard[col+Xoffset][row+Yoffset])
+def advancedGameCutout(col, row, winType, team):
+    advancedGameBoardCutout = []
+
+    if winType == 1:
+        for Yoffset in range(0, 4):
+            if row + Yoffset <= 5 and col <= 6:
+                advancedGameBoardCutout.append(myboard[col][row+Yoffset])
             else:
-                columnOfGameBoardCutout.append(0)
-        
-        gameBoardCutout.append(columnOfGameBoardCutout)
-
-    #print(gameBoardCutout)
-    filteredMatrix = []
-
-    for x in range(len(gameBoardCutout)): # filters the game board cutout to only look for coins of a specific team. will return a matrix with only 1s and 0s
-        rowOfFilteredMatrix = []
-        for y in range(len(gameBoardCutout[x])):
-            rowOfFilteredMatrix.append(int(team == gameBoardCutout[x][y]))
-        filteredMatrix.append(rowOfFilteredMatrix)
-
-    #print(filteredMatrix)
-    return filteredMatrix
-
-def detectMatrixMatch(filteredCutout, winMatrix, xSize, ySize): # function for checking if the coins in a matrix signify a win
-    match = 1
-    for row in range(ySize):
-        for column in range(xSize):
-            if winMatrix[column][row] == 1:
-                if filteredCutout[column][row] != 1:
-                    match = 0
-    #print(match)
-    return match
+                advancedGameBoardCutout.append(0)
     
+    if winType == 2:
+        for Xoffset in range(0, 4):
+            if row <= 5 and col + Xoffset <= 6:
+                advancedGameBoardCutout.append(myboard[col+Xoffset][row])
+            else:
+                advancedGameBoardCutout.append(0)
+        
+    if winType == 3:
+        Yoffset = -1
+        for Xoffset in [0,1,2,3]:
+            Yoffset += 1
+            if row + Yoffset <= 5 and col + Xoffset <= 6:
+                advancedGameBoardCutout.append(myboard[col+Xoffset][row+Yoffset])
+            else:
+                advancedGameBoardCutout.append(0)
+        
+    if winType == 4:
+        Yoffset = -1
+        for Xoffset in [3,2,1,0]:
+            Yoffset += 1
+            if row + Yoffset <= 5 and col + Xoffset <= 6:
+                advancedGameBoardCutout.append(myboard[col+Xoffset][row+Yoffset])
+            else:
+                advancedGameBoardCutout.append(0)
 
-def checkforPoints(mType, xSize, ySize, team): # function to oversee the convolution of a single matrix at all locations on the board
+    if all(item == team for item in advancedGameBoardCutout):
+        return 1
+    else:
+        return 0
+
+def checkforPoints(playerWinWeight, aiWinWeight, thrStkWeight): # function to oversee the convolution of a single matrix at all locations on the board
+
     score = 0
     for column in range(len(myboard)):
         for row in range(len(myboard[column])):
-            filteredMatrix = takeGameCutout(col = column, row = row, xSize = xSize, ySize = ySize, team = team)
-            score += detectMatrixMatch(filteredCutout = filteredMatrix, winMatrix = mType, xSize = xSize, ySize = ySize)
+            score += advancedGameCutout(col=column, row=row, winType=1, team=1) * playerWinWeight
+            score += advancedGameCutout(col=column, row=row, winType=2, team=1) * playerWinWeight
+            score += advancedGameCutout(col=column, row=row, winType=3, team=1) * playerWinWeight
+            score += advancedGameCutout(col=column, row=row, winType=4, team=1) * playerWinWeight
+
+            score -= advancedGameCutout(col=column, row=row, winType=1, team=2) * aiWinWeight
+            score -= advancedGameCutout(col=column, row=row, winType=2, team=2) * aiWinWeight
+            score -= advancedGameCutout(col=column, row=row, winType=3, team=2) * aiWinWeight
+            score -= advancedGameCutout(col=column, row=row, winType=4, team=2) * aiWinWeight
     
     return score
-
-
-def runCheck(playerWinWeight, aiWinWeight, thrStkWeight): # function to oversee the full-board convolution of all different checking Matrices
-
-    boardScore = 0
-    boardScore += (checkforPoints(mType = winMatrix1, xSize = 1, ySize = 4, team = 1)) * playerWinWeight
-    boardScore += (checkforPoints(mType = winMatrix2, xSize = 4, ySize = 1, team = 1)) * playerWinWeight
-    boardScore += (checkforPoints(mType = winMatrix3, xSize = 4, ySize = 4, team = 1)) * playerWinWeight
-    boardScore += (checkforPoints(mType = winMatrix4, xSize = 4, ySize = 4, team = 1)) * playerWinWeight # runs the checkForPoints function for every possible configuration of a win on red
-
-    boardScore -= (checkforPoints(mType = winMatrix1, xSize = 1, ySize = 4, team = 2)) * aiWinWeight
-    boardScore -= (checkforPoints(mType = winMatrix2, xSize = 4, ySize = 1, team = 2)) * aiWinWeight
-    boardScore -= (checkforPoints(mType = winMatrix3, xSize = 4, ySize = 4, team = 2)) * aiWinWeight
-    boardScore -= (checkforPoints(mType = winMatrix4, xSize = 4, ySize = 4, team = 2)) * aiWinWeight # runs the checkForPoints function for every possible configuration of a win on yellow
-
-    return boardScore
-
-    #checkforPoints(mType = threeStkMatrix1, mSize = 9)
-    #checkforPoints(mType = threeStkMatrix2, mSize = 9)
-    #checkforPoints(mType = threeStkMatrix3, mSize = 9)
-    #checkforPoints(mType = threeStkMatrix4, mSize = 9) # runs the checkForPoints function for every possible configuration of a 3-stack
 
 
 def mainRun(wcBoard): # master function to oversee all function operations (unnecessary abstraction perhaps?)
     #start = time.time()
     global myboard
     myboard = copy.deepcopy(wcBoard) # creates a deepcopy of the passed board to avoid editing the original
-    boardScore = runCheck(playerWinWeight= 2, aiWinWeight = 1, thrStkWeight=0)
+    boardScore = checkforPoints(playerWinWeight= 2, aiWinWeight = 1, thrStkWeight=0)
     #print(time.time() - start)
 
     #print(wcBoard)

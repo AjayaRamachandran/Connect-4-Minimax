@@ -7,7 +7,7 @@ from math import *
 import windetection
 import transpositiontable
 ###### VARIABLES ######
-simLevel = 5
+simLevel = 6
 testBoard = []
 
 ###### FUNCTIONS ######
