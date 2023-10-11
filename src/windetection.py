@@ -10,24 +10,24 @@ myboard = []
 boardScore = 0
 
 ## Matrices with checkable arrangements
-winMatrix1 = [[1,1,1,1],[0,0,0,0],[0,0,0,0],[0,0,0,0]] # vertical win
-winMatrix2 = [[1,0,0,0],[1,0,0,0],[1,0,0,0],[1,0,0,0]] # horizontal win
+winMatrix1 = [[1,1,1,1]] # vertical win
+winMatrix2 = [[1],[1],[1],[1]] # horizontal win
 winMatrix3 = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]] # LeftDown RightUp diagonal win
 winMatrix4 = [[0,0,0,1],[0,0,1,0],[0,1,0,0],[1,0,0,0]] # LeftUp RightDown diagonal win
 
-threeStkMatrix1 = [[1,1,1],[0,0,0],[0,0,0]] # vertical 3-stack
-threeStkMatrix2 = [[1,0,0],[1,0,0],[1,0,0]] # horizontal 3-stack
+threeStkMatrix1 = [[1,1,1]] # vertical 3-stack
+threeStkMatrix2 = [[1],[1],[1]] # horizontal 3-stack
 threeStkMatrix3 = [[1,0,0],[0,1,0],[0,0,1]] # LeftDown RightUp diagonal 3-stack
 threeStkMatrix4 = [[0,0,1],[0,1,0],[1,0,0]] # LeftUp RightDown diagonal 3-stack
 
 ###### FUNCTIONS ######
-def takeGameCutout(col, row, mSize, team):
+def takeGameCutout(col, row, xSize, ySize, team):
     gameBoardCutout = []
 
-    for Xoffset in range(0, mSize): # takes a cutout of the game board of a certain size at a specific location for examining
+    for Xoffset in range(0, xSize): # takes a cutout of the game board of a certain size at a specific location for examining
         columnOfGameBoardCutout = []
         #columnOfGameBoardCutout.append(myboard[col+Xoffset][row])
-        for Yoffset in range(0, mSize):
+        for Yoffset in range(0, ySize):
             if row + Yoffset <= 5 and col + Xoffset <= 6:
                 columnOfGameBoardCutout.append(myboard[col+Xoffset][row+Yoffset])
             else:
@@ -47,10 +47,10 @@ def takeGameCutout(col, row, mSize, team):
     #print(filteredMatrix)
     return filteredMatrix
 
-def detectMatrixMatch(filteredCutout, winMatrix, mSize): # function for checking if the coins in a matrix signify a win
+def detectMatrixMatch(filteredCutout, winMatrix, xSize, ySize): # function for checking if the coins in a matrix signify a win
     match = 1
-    for row in range(mSize):
-        for column in range(mSize):
+    for row in range(ySize):
+        for column in range(xSize):
             if winMatrix[column][row] == 1:
                 if filteredCutout[column][row] != 1:
                     match = 0
@@ -58,12 +58,12 @@ def detectMatrixMatch(filteredCutout, winMatrix, mSize): # function for checking
     return match
     
 
-def checkforPoints(mType, mSize, team): # function to oversee the convolution of a single matrix at all locations on the board
+def checkforPoints(mType, xSize, ySize, team): # function to oversee the convolution of a single matrix at all locations on the board
     score = 0
-    for row in range(len(myboard[0])):
-        for column in range(len(myboard)):
-            filteredMatrix = takeGameCutout(col = column, row = row, mSize = mSize, team = team)
-            score += detectMatrixMatch(filteredCutout = filteredMatrix, winMatrix = mType, mSize = mSize)
+    for column in range(len(myboard)):
+        for row in range(len(myboard[column])):
+            filteredMatrix = takeGameCutout(col = column, row = row, xSize = xSize, ySize = ySize, team = team)
+            score += detectMatrixMatch(filteredCutout = filteredMatrix, winMatrix = mType, xSize = xSize, ySize = ySize)
     
     return score
 
@@ -71,15 +71,15 @@ def checkforPoints(mType, mSize, team): # function to oversee the convolution of
 def runCheck(playerWinWeight, aiWinWeight, thrStkWeight): # function to oversee the full-board convolution of all different checking Matrices
 
     boardScore = 0
-    boardScore += (checkforPoints(mType = winMatrix1, mSize = 4, team = 1)) * playerWinWeight
-    boardScore += (checkforPoints(mType = winMatrix2, mSize = 4, team = 1)) * playerWinWeight
-    boardScore += (checkforPoints(mType = winMatrix3, mSize = 4, team = 1)) * playerWinWeight
-    boardScore += (checkforPoints(mType = winMatrix4, mSize = 4, team = 1)) * playerWinWeight # runs the checkForPoints function for every possible configuration of a win on red
+    boardScore += (checkforPoints(mType = winMatrix1, xSize = 1, ySize = 4, team = 1)) * playerWinWeight
+    boardScore += (checkforPoints(mType = winMatrix2, xSize = 4, ySize = 1, team = 1)) * playerWinWeight
+    boardScore += (checkforPoints(mType = winMatrix3, xSize = 4, ySize = 4, team = 1)) * playerWinWeight
+    boardScore += (checkforPoints(mType = winMatrix4, xSize = 4, ySize = 4, team = 1)) * playerWinWeight # runs the checkForPoints function for every possible configuration of a win on red
 
-    boardScore -= (checkforPoints(mType = winMatrix1, mSize = 4, team = 2)) * aiWinWeight
-    boardScore -= (checkforPoints(mType = winMatrix2, mSize = 4, team = 2)) * aiWinWeight
-    boardScore -= (checkforPoints(mType = winMatrix3, mSize = 4, team = 2)) * aiWinWeight
-    boardScore -= (checkforPoints(mType = winMatrix4, mSize = 4, team = 2)) * aiWinWeight # runs the checkForPoints function for every possible configuration of a win on yellow
+    boardScore -= (checkforPoints(mType = winMatrix1, xSize = 1, ySize = 4, team = 2)) * aiWinWeight
+    boardScore -= (checkforPoints(mType = winMatrix2, xSize = 4, ySize = 1, team = 2)) * aiWinWeight
+    boardScore -= (checkforPoints(mType = winMatrix3, xSize = 4, ySize = 4, team = 2)) * aiWinWeight
+    boardScore -= (checkforPoints(mType = winMatrix4, xSize = 4, ySize = 4, team = 2)) * aiWinWeight # runs the checkForPoints function for every possible configuration of a win on yellow
 
     return boardScore
 

@@ -2,9 +2,10 @@
 import random as rand
 import time
 import copy
-import windetection
 from math import *
 
+import windetection
+import transpositiontable
 ###### VARIABLES ######
 simLevel = 5
 testBoard = []
@@ -41,14 +42,25 @@ def simAddCoin(column, variation, team): # simulates the placing of a coin in a 
 def simulateChildren(state, team, depth):
     boardCopy = copy.deepcopy(state)
     children = []
-
+    '''
+    optimizedChoice = transpositiontable.optimizedChoose(state) # checks the transpositionTable to find which column was searched successfully in similar game states
+    if optimizedChoice != -1:
+        testCol = optimizedChoice
+        testBoard = copy.deepcopy(boardCopy)
+        if checkIfFull(testBoard) == False: # if the board is full, don't run this bit
+            simState = simAddCoin(column=testCol, variation=testBoard, team=team) # runs the simAddCoin functions for every column
+            if not simState == "fail": # excludes columns where the next move would exit the top of the board
+                children.append((copy.deepcopy(simState), testCol))
+                if depth == 0:
+                    listOfChildrenColumns.append(testCol)
+    '''
     for iter in range(7): # runs across every column
         testCol = int(4 + (((iter % 2 - 0.5) * 2) * round(iter / 2 + 0.1))) - 1
         testBoard = copy.deepcopy(boardCopy)
         if checkIfFull(testBoard) == False: # if the board is full, don't run this bit
             simState = simAddCoin(column=testCol, variation=testBoard, team=team) # runs the simAddCoin functions for every column
             if not simState == "fail": # excludes columns where the next move would exit the top of the board
-                children.append(copy.deepcopy(simState))
+                children.append((copy.deepcopy(simState), testCol))
                 if depth == 0:
                     listOfChildrenColumns.append(testCol)
     
@@ -63,18 +75,20 @@ def minimax(state, depth, alpha, beta, maximizingPlayer):
 
     
     if depth == simLevel or gameOver:
-        return windetection.mainRun(gameState)
+        score = windetection.mainRun(gameState)
+        #transpositiontable.add((gameState, score))
+        return score
     
     if maximizingPlayer:
         maxEval = -100000
         family = simulateChildren(gameState, ((depth % 2 == 0) + 1), depth)
         for child in family:
-            #print(child)
-            eval = minimax(child, depth+1, alpha, beta, False)
+            eval = minimax(child[0], depth+1, alpha, beta, False)
             #print(str(eval) + "lvl" + str(depth))
             maxEval = max(maxEval, eval)
             alpha = max(alpha, eval)
             if beta <= alpha:
+                #transpositiontable.add(child)
                 break
         return maxEval
     else:
@@ -82,11 +96,12 @@ def minimax(state, depth, alpha, beta, maximizingPlayer):
         family = simulateChildren(gameState, ((depth % 2 == 0) + 1), depth)
         for child in family:
             #print(child)
-            eval = minimax(child, depth+1, alpha, beta, True)
+            eval = minimax(child[0], depth+1, alpha, beta, True)
             #print(str(eval) + "lvl" + str(depth))
             minEval = min(minEval, eval)
             beta = min(beta, eval)
             if beta <= alpha:
+                #transpositiontable.add(child)
                 break
             if depth == 0:
                 listOfChildrenScores.append(minEval)

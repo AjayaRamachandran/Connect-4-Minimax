@@ -4,6 +4,7 @@ import time
 
 import minimax
 import windetection
+import transpositiontable
 ###### IMAGES ######
 None
 
