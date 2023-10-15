@@ -19,7 +19,7 @@ The module `minimax.py` also contains an implementation of the alpha-beta prunin
 |---                               |---           |---                    |
 |Crude Minimax (depth: 6)          |approx. 130k  |approx. 100 sec        |
 |Crude Minimax (depth: 5)          |approx. 20k   |approx. 14 sec         |
-|Crude Minimax (depth: 4)          |approx. 2.8k  |approx. 2.3 sec        |
-|Minimax w/AB pruning (depth: 6)   |approx. 2k    |approx. 2.0 sec        |
-|Minimax w/AB pruning (depth: 5)   |approx. 500   |approx. 550 ms         |
+|Crude Minimax (depth: 4)          |approx. 2.8k  |approx. 2.1 sec        |
+|Minimax w/AB pruning (depth: 6)   |approx. 4k    |approx. 3.2 sec        |
+|Minimax w/AB pruning (depth: 5)   |approx. 600   |approx. 550 ms         |
 |Minimax w/AB pruning (depth: 4)   |approx. 175   |approx. 110 ms         |
