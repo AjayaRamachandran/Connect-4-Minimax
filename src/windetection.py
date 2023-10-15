@@ -84,11 +84,11 @@ def checkforPoints(playerWinWeight, aiWinWeight, thrStkWeight): # function to ov
 
 
 def mainRun(wcBoard): # master function to oversee all function operations (unnecessary abstraction perhaps?)
-    start = time.time()
+    #start = time.time()
     global myboard
     myboard = copy.deepcopy(wcBoard) # creates a deepcopy of the passed board to avoid editing the original
     boardScore = checkforPoints(playerWinWeight= 2, aiWinWeight = 1, thrStkWeight=0)
-    print(time.time() - start)
+    #print(time.time() - start)
 
     #print(wcBoard)
     return boardScore # returns the weighted score of the board state at hand back to main.py
