@@ -74,7 +74,7 @@ def minimax(state, depth, alpha, beta, maximizingPlayer):
     gameOver = (windetection.mainRun(gameState) != 0)
 
     
-    if depth == simLevel or gameOver:
+    if depth == simLimit or gameOver:
         score = windetection.mainRun(gameState)
         #transpositiontable.add((gameState, score))
         return score
@@ -113,17 +113,31 @@ def aiTest(board): # master function, cues tree simulation and minimax algorithm
     global listOfChildrenColumns
     global listOfChildrenScores
     global iters
+    global simLimit
 
     boardCopy = copy.deepcopy(board)
     listOfChildrenColumns = []
     listOfChildrenScores = []
     iters = 0
 
+    simLimit = simLevel
+
     minimax(boardCopy, 0, -100000, 100000, False)
     print(iters)
     print(listOfChildrenScores)
 
     if len(listOfChildrenScores) > 0:
+        notSurefireLoss = 0
+        for child in listOfChildrenScores:
+            if child != -1:
+                notSurefireLoss = 1
+
+        if notSurefireLoss == 0:
+                simLimit = simLevel - 1
+                print("Minimax with SimLevel of" + str(simLevel) + " returned a surefire loss. Repeating simulation with SimLevel of" + str(simLevel-1))
+                minimax(boardCopy, 0, -100000, 100000, False)
+                print(iters)
+                print(listOfChildrenScores)
         aiMove = listOfChildrenColumns[listOfChildrenScores.index(min(listOfChildrenScores))]
     else:
         aiMove = "None"
