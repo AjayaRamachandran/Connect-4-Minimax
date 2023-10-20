@@ -8,7 +8,7 @@ import windetection
 import transpositiontable
 import statepackager as spau # stands for [S]tate [P]ackage [A]nd [U]npackage
 ###### VARIABLES ######
-simLevel = 3
+simLevel = 6
 testBoard = []
 
 ###### FUNCTIONS ######
