@@ -6,6 +6,7 @@ from math import *
 
 import windetection
 import transpositiontable
+import statepackager as spau # stands for [S]tate [P]ackage [A]nd [U]npackage
 ###### VARIABLES ######
 simLevel = 6
 testBoard = []
@@ -107,6 +108,37 @@ def minimax(state, depth, alpha, beta, maximizingPlayer):
                 listOfChildrenScores.append(minEval)
         return minEval
     
+def naiveWinPrevention(): # runs if the AI is caught in a trap and the player is going to win in the very next move - blocks any wins possible, even if it opens a different win
+    global boardCopy
+
+    print("All levels of Minimax failed (ID:TRAP - player has two consecutive open wins | tags: <partially avoidable>, <imminent>). Commencing naive win prevention")
+
+    currentBoardScore = windetection.mainRun(boardCopy) # finds the score of the current game state
+    currentBestDiff = 0
+    currentBestAIMove = 3
+    listOfDiffs = []
+
+    for testCol in range(len(boardCopy)): # if any game state after the AI plays is better than the current one (AKA a win is prevented) then find the best such move
+
+        testPlayerMoveState = simAddCoin(column=testCol, variation=boardCopy, team=1)
+        testAIMoveState = simAddCoin(column=testCol, variation=boardCopy, team=2)
+
+        if testAIMoveState != "fail":
+            testAIMoveScore = windetection.mainRun(testAIMoveState)
+            testPlayerMoveScore = windetection.mainRun(testPlayerMoveState)
+            diff = testPlayerMoveScore - testAIMoveScore
+            listOfDiffs.append(diff)
+
+            if currentBestDiff <= diff:
+                currentBestDiff = diff
+                currentBestAIMove = testCol
+
+    print("In each column, what score is prevented when AI plays there: " + str(listOfDiffs))
+    print("Naive win prevention states that the best move to play is in column " + str(currentBestAIMove))
+
+    return currentBestAIMove
+
+    
 
 def aiTest(board): # master function, cues tree simulation and minimax algorithm
     global boardCopy
@@ -123,21 +155,44 @@ def aiTest(board): # master function, cues tree simulation and minimax algorithm
     simLimit = simLevel
 
     minimax(boardCopy, 0, -100000, 100000, False)
-    print(iters)
-    print(listOfChildrenScores)
+    
+    print("Number of game states searched: " + str(iters))
+    print("Minimax scores of each column: " + str(listOfChildrenScores))
 
     if len(listOfChildrenScores) > 0:
-        notSurefireLoss = 0
+        surefireLoss = 1
         for child in listOfChildrenScores:
-            if child != -1:
-                notSurefireLoss = 1
+            if child != 2:
+                surefireLoss = 0
 
-        if notSurefireLoss == 0:
-                simLimit = simLevel - 1
-                print("Minimax with SimLevel of" + str(simLevel) + " returned a surefire loss. Repeating simulation with SimLevel of" + str(simLevel-1))
-                minimax(boardCopy, 0, -100000, 100000, False)
-                print(iters)
-                print(listOfChildrenScores)
+        simLimit = simLevel
+        
+        while surefireLoss == 1:
+
+            if len(listOfChildrenScores) > 0:
+
+                if surefireLoss == 1 and simLimit > 2:
+                    simLimit = simLimit - 1
+
+                    print("Minimax with SimLevel of " + str(simLimit + 1) + " failed (ID:TRAP - player has two consecutive open wins | tags: <unavoidable>, <later>). Repeating with SimLevel of " + str(simLimit))
+
+                    listOfChildrenScores = []
+                    listOfChildrenColumns = []
+                    iters = 0
+
+                    minimax(boardCopy, 0, -100000, 100000, False)
+
+                    print("    Number of game states searched: " + str(iters))
+                    print("    Minimax scores of each column: " + str(listOfChildrenScores))
+
+                elif simLimit == 2:
+                    return naiveWinPrevention() # if the player is going to win in the next turn because of a trap, play into the trap just in case they don't know they set it up
+
+                surefireLoss = 1
+                for child in listOfChildrenScores:
+                    if child != 2:
+                        surefireLoss = 0
+                    
         aiMove = listOfChildrenColumns[listOfChildrenScores.index(min(listOfChildrenScores))]
     else:
         aiMove = "None"

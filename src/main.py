@@ -5,6 +5,7 @@ import time
 import minimax
 import windetection
 import transpositiontable
+import statepackager as spau # stands for [S]tate [P]ackage [A]nd [U]npackage
 ###### IMAGES ######
 None
 
@@ -81,6 +82,7 @@ def renderNextCoin():
 
 def aiTurn(): # outsources actual ai play to the minimax module "minimax.py"
     dropColumn = minimax.aiTest(board=gameBoard)
+    print("AI chose column: " + str(dropColumn))
     if dropColumn != "None":
         addCoin(team="ai", column=dropColumn)
 
@@ -138,11 +140,19 @@ while running:
         if addCoin(team="player", column=dropColumn) == "success": # only processes as a valid move if "success" returns
             drawBoard()
             pygame.display.update()
-            aiTurn()
+            gameScore = windetection.mainRun(gameBoard)
+
+            print("-------------------------------------------------------------------")
+            if gameScore != 2:
+                aiTurn()
+                print("Game state HASH: " + spau.package(gameBoard))
             
-            print(windetection.mainRun(gameBoard))
-            #windetection.mainRun(gameBoard)
-            #windetection.detectMatrixMatch(col = 0, row = 2, mSize = 4, team = 2)
+            print("Current game score: " + str(gameScore))
+
+            if gameScore == 2:
+                print("The Player has won")
+            elif gameScore == -1:
+                print("The AI has won")
         
 # Quit Pygame
 pygame.quit()

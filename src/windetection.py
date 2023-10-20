@@ -51,7 +51,7 @@ def advancedGameCutout(col, row, winType, team, length):
     if winType == 4:
         Yoffset = -1
         if row <= 6 - length and col <= 7 - length:
-            for Xoffset in range(length, -1, -1):
+            for Xoffset in range(length-1, -1, -1):
                 Yoffset += 1
                 if row + Yoffset <= 5 and col + Xoffset <= 6:
                     advancedGameBoardCutout.append(myboard[col+Xoffset][row+Yoffset])
@@ -87,7 +87,7 @@ def mainRun(wcBoard): # master function to oversee all function operations (unne
     #start = time.time()
     global myboard
     myboard = copy.deepcopy(wcBoard) # creates a deepcopy of the passed board to avoid editing the original
-    boardScore = checkforPoints(playerWinWeight= 2, aiWinWeight = 1, thrStkWeight=0)
+    boardScore = checkforPoints(playerWinWeight = 2, aiWinWeight = 1, thrStkWeight=0)
     #print(time.time() - start)
 
     #print(wcBoard)
