@@ -8,7 +8,7 @@ import windetection
 import transpositiontable
 import statepackager as spau # stands for [S]tate [P]ackage [A]nd [U]npackage
 ###### VARIABLES ######
-simLevel = 6
+simLevel = 3
 testBoard = []
 
 ###### FUNCTIONS ######
@@ -72,11 +72,11 @@ def minimax(state, depth, alpha, beta, maximizingPlayer):
     global iters
     iters += 1
     gameState = copy.deepcopy(state)
-    gameOver = (windetection.mainRun(gameState) != 0)
+    gameOver = (windetection.mainRun(gameState, "tree") != 0)
 
     
     if depth == simLimit or gameOver:
-        score = windetection.mainRun(gameState)
+        score = windetection.mainRun(gameState, "tree")
         #transpositiontable.add((gameState, score))
         return score
     
@@ -113,7 +113,7 @@ def naiveWinPrevention(): # runs if the AI is caught in a trap and the player is
 
     print("All levels of Minimax failed (ID:TRAP - player has two consecutive open wins | tags: <partially avoidable>, <imminent>). Commencing naive win prevention")
 
-    currentBoardScore = windetection.mainRun(boardCopy) # finds the score of the current game state
+    currentBoardScore = windetection.mainRun(boardCopy, "tree") # finds the score of the current game state
     currentBestDiff = 0
     currentBestAIMove = 3
     listOfDiffs = []
@@ -124,8 +124,8 @@ def naiveWinPrevention(): # runs if the AI is caught in a trap and the player is
         testAIMoveState = simAddCoin(column=testCol, variation=boardCopy, team=2)
 
         if testAIMoveState != "fail":
-            testAIMoveScore = windetection.mainRun(testAIMoveState)
-            testPlayerMoveScore = windetection.mainRun(testPlayerMoveState)
+            testAIMoveScore = windetection.mainRun(testAIMoveState, "tree")
+            testPlayerMoveScore = windetection.mainRun(testPlayerMoveState, "tree")
             diff = testPlayerMoveScore - testAIMoveScore
             listOfDiffs.append(diff)
 

@@ -16,6 +16,7 @@ windowSize = (500, 500)
 
 pygame.display.set_caption("Connect 4") # Sets title of window
 screen = pygame.display.set_mode(windowSize) # Sets the dimensions of the window to the windowSize
+font = pygame.font.Font(None, 36)
 
 tempDropX = 0
 graphicsDropX = 0
@@ -31,6 +32,7 @@ fps = 60
 clock = pygame.time.Clock()
 
 gameBoard = [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]
+winCells = [[]]
 bhe = 70 # board horizontal edges, recorded in pixels from edge
 bve = 100 # board vertical edges, recorded in pixels from edge
 
@@ -54,6 +56,22 @@ def drawBoard(): # draws game state
                 pygame.draw.circle(screen, coinColor1, (100 + h*50, 375 - v*50), 15, 0)
             elif gameBoard[h][v] == 2:
                 pygame.draw.circle(screen, coinColor2, (100 + h*50, 375 - v*50), 15, 0)
+
+    #print(winCells)
+    if isinstance(winCells, list) and len(winCells) == 4:
+        for h in range(7):
+            for v in range(6):
+                if [h, v] in winCells:
+                    pygame.draw.line(screen, emptyColor, (100 + h*50 + 6, 375 - v*50 - 6), (100 + h*50 - 6, 375 - v*50 + 6), 5)
+                    pygame.draw.line(screen, emptyColor, (100 + h*50 + 6, 375 - v*50 + 6), (100 + h*50 - 6, 375 - v*50 - 6), 5)
+        if gameScore == -1:
+            text = font.render("Yellow (AI) has won", True, coinColor2)
+            text_rect = (130, 430)
+            screen.blit(text, text_rect)
+        if gameScore == 2:
+            text = font.render("Red (player) has won", True, coinColor1)
+            text_rect = (130, 430)
+            screen.blit(text, text_rect)
 
 
 def addCoin(team, column): # function to refresh the board after a player/opponent's click
@@ -137,22 +155,28 @@ while running:
                 if event.type == pygame.QUIT:
                     running = False
         
-        if addCoin(team="player", column=dropColumn) == "success": # only processes as a valid move if "success" returns
-            drawBoard()
-            pygame.display.update()
-            gameScore = windetection.mainRun(gameBoard)
+        if windetection.mainRun(gameBoard, "tree") == 0:
+            if addCoin(team="player", column=dropColumn) == "success": # only processes as a valid move if "success" returns
+                drawBoard()
+                pygame.display.update()
+                gameScore = windetection.mainRun(gameBoard, "tree")
 
-            print("-------------------------------------------------------------------")
-            if gameScore != 2:
-                aiTurn()
-                print("Game state HASH: " + spau.package(gameBoard))
-            
-            print("Current game score: " + str(gameScore))
+                print("-------------------------------------------------------------------")
+                if gameScore != 2:
+                    aiTurn()
+                    print("Game state HASH: " + spau.package(gameBoard))
+                
+                print("Current game score: " + str(gameScore))
 
-            if gameScore == 2:
-                print("The Player has won")
-            elif gameScore == -1:
-                print("The AI has won")
+                gameScore = windetection.mainRun(gameBoard, "tree")
+                winCells = windetection.mainRun(gameBoard, "main")
+
+                if gameScore == 2:
+                    print("The Player has won")
+                elif gameScore == -1:
+                    print("The AI has won")
+                
+                print("The winning cells are: " + str(winCells))
         
 # Quit Pygame
 pygame.quit()
