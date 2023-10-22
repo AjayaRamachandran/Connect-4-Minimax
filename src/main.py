@@ -173,10 +173,10 @@ while running:
 
                 if gameScore == 2:
                     print("The Player has won")
+                    print("The winning cells are: " + str(winCells))
                 elif gameScore == -1:
                     print("The AI has won")
-                
-                print("The winning cells are: " + str(winCells))
+                    print("The winning cells are: " + str(winCells))
         
 # Quit Pygame
 pygame.quit()
