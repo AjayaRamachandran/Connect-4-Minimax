@@ -1,9 +1,9 @@
 <p align="center">
 <img src="https://i.ibb.co/JrTT8sh/nodes.png" width="250" height="265">
-</p>
 
 # Connect-4-Minimax
 #### A Connect Four program and bot that uses a variation of the minimax algorithm to play the game.
+</p>
 ---
 
 ## Hallmark Features
