@@ -2,7 +2,11 @@
 <img src="https://i.ibb.co/JrTT8sh/nodes.png" width="250" height="265">
 </p>
 
-# Connect-4-Minimax
+<p align="center">
+  <img alt="Nodes" src="https://i.ibb.co/JrTT8sh/nodes.png" width="180px" />
+  <h1 align="center">Connect 4 AI</h1>
+</p>
+
 #### A Connect Four program and bot that uses a variation of the minimax algorithm to play the game.
 
 ---
