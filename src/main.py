@@ -33,6 +33,9 @@ clock = pygame.time.Clock()
 
 gameBoard = [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]
 winCells = [[]]
+boardWidth = 7
+boardHeight = 6
+
 bhe = 70 # board horizontal edges, recorded in pixels from edge
 bve = 100 # board vertical edges, recorded in pixels from edge
 
@@ -48,8 +51,8 @@ def drawBoard(): # draws game state
     # draws plain blue board, with dimensions based on window width
     pygame.draw.polygon(screen, boardColor, [(bhe, bve),(windowSize[0] - bhe,  bve),(windowSize[0] - bhe, windowSize[1] - bve),(bhe ,windowSize[1] - bve)], width=0)
 
-    for h in range(7):
-        for v in range(6):
+    for h in range(boardWidth):
+        for v in range(boardHeight):
             if gameBoard[h][v] == 0:
                 pygame.draw.circle(screen, emptyColor, (100 + h*50, 375 - v*50), 15, 0)
             elif gameBoard[h][v] == 1:
@@ -59,23 +62,23 @@ def drawBoard(): # draws game state
 
     #print(winCells)
     if isinstance(winCells, list) and len(winCells) == 4:
-        for h in range(7):
-            for v in range(6):
+        for h in range(boardWidth):
+            for v in range(boardHeight):
                 if [h, v] in winCells:
                     pygame.draw.line(screen, emptyColor, (100 + h*50 + 6, 375 - v*50 - 6), (100 + h*50 - 6, 375 - v*50 + 6), 5)
                     pygame.draw.line(screen, emptyColor, (100 + h*50 + 6, 375 - v*50 + 6), (100 + h*50 - 6, 375 - v*50 - 6), 5)
-        if gameScore == -1:
+        if gameScore <= -1:
             text = font.render("Yellow (AI) has won", True, coinColor2)
             text_rect = (130, 430)
             screen.blit(text, text_rect)
-        if gameScore == 2:
+        if gameScore >= 2:
             text = font.render("Red (player) has won", True, coinColor1)
             text_rect = (130, 430)
             screen.blit(text, text_rect)
 
 
 def addCoin(team, column): # function to refresh the board after a player/opponent's click
-    height = 5
+    height = boardHeight - 1
     teamCopy = team
     columnCopy = column
     global gameBoard
@@ -99,7 +102,7 @@ def renderNextCoin():
 
 
 def aiTurn(): # outsources actual ai play to the minimax module "minimax.py"
-    dropColumn = minimax.aiTest(board=gameBoard)
+    dropColumn = minimax.aiPlay(board=gameBoard)
     print("AI chose column: " + str(dropColumn))
     if dropColumn != "None":
         addCoin(team="ai", column=dropColumn)

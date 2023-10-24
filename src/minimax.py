@@ -11,6 +11,9 @@ import statepackager as spau # stands for [S]tate [P]ackage [A]nd [U]npackage
 simLevel = 6
 testBoard = []
 
+boardWidth = 7
+boardHeight = 6
+
 ###### FUNCTIONS ######
 def checkIfFull(sampleBoard):
     full = True
@@ -25,7 +28,7 @@ def checkIfFull(sampleBoard):
 
 
 def simAddCoin(column, variation, team): # simulates the placing of a coin in a certain column then returns the new gameState
-    simheight = 5
+    simheight = boardHeight - 1
     variationCopy = copy.deepcopy(variation)
     columnCopy = column
     teamCopy = int(team)
@@ -55,8 +58,8 @@ def simulateChildren(state, team, depth):
                 if depth == 0:
                     listOfChildrenColumns.append(testCol)
     '''
-    for iter in range(7): # runs across every column
-        testCol = int(4 + (((iter % 2 - 0.5) * 2) * round(iter / 2 + 0.1))) - 1
+    for iter in range(boardWidth): # runs across every column
+        testCol = int(4 + (((iter % 2 - 0.5) * 2) * round(iter / 2 + 0.1))) - 1 # CHANGE IF BOARD DIMENSIONS CHANGE
         testBoard = copy.deepcopy(boardCopy)
         if checkIfFull(testBoard) == False: # if the board is full, don't run this bit
             simState = simAddCoin(column=testCol, variation=testBoard, team=team) # runs the simAddCoin functions for every column
@@ -140,7 +143,7 @@ def naiveWinPrevention(): # runs if the AI is caught in a trap and the player is
 
     
 
-def aiTest(board): # master function, cues tree simulation and minimax algorithm
+def aiPlay(board): # master function, cues tree simulation and minimax algorithm
     global boardCopy
     global listOfChildrenColumns
     global listOfChildrenScores
@@ -193,12 +196,8 @@ def aiTest(board): # master function, cues tree simulation and minimax algorithm
                     if child != 2:
                         surefireLoss = 0
                     
-        aiMove = listOfChildrenColumns[listOfChildrenScores.index(min(listOfChildrenScores))]
+        aiMove = listOfChildrenColumns[listOfChildrenScores.index(min(listOfChildrenScores))] # returns the move that yields the lowest score (best for AI)
     else:
         aiMove = "None"
     #aiMove = rand.randint(0,6) # test
     return(aiMove)
-
-
-def aiPlay():
-    time.sleep(0)
