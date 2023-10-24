@@ -30,7 +30,7 @@ To fix this, if the AI sees a surefire loss when searching `N` moves ahead, it w
 
 
 ## Optimization Specs Chart
-|                                  |Nodes Searched|Time (w/ Win Detection)|
+|                                  |Nodes Searched|Time Taken             |
 |---                               |---           |---                    |
 |Crude Minimax (depth: 6)          |approx. 130k  |approx. 71 sec         |
 |Crude Minimax (depth: 5)          |approx. 20k   |approx. 10 sec         |
