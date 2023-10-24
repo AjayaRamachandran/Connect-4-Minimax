@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="Nodes" src="https://i.ibb.co/JrTT8sh/nodes.png" width="180px" />
+  <img alt="Nodes" src="https://i.ibb.co/JrTT8sh/nodes.png" width="140px" />
   <h1 align="center">Connect 4 AI</h1>
 </p>
 
