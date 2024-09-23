@@ -23,6 +23,9 @@ Since on average better moves are played in the middle of the board, when search
 ### 5. Optimized Win Detection (Depth: 5 -> 6)
 The program can detect if either the player or bot has achieved 4 in a row. The original win detection program (slicing sections of the board and comparing them against hard-coded matrices) completed one full board analysis in ~5 ms, which is not that fast on its own and extremely slow when dealing with the hundreds, or even thousands of analyses we have to do each time we play. With heavy optimization (needle slicing method, removing redundant searches) can complete the full board analysis in ~0.5ms, which is faster. A faster win detection module means that larger portions of the game tree can be searched in less time, allowing us to look more moves ahead. Specifically in this case, the upgrade in speed in the win detection module allowed us to go from looking 5 moves ahead to 6.
 
+### 6. General Program Optimizations (Depth: 6 -> 7)
+There seems to have been an interesting error in the original programming which made the win-checker scan the board twice at every leaf node. Removing this double-checking approximately doubles the program's response speed, and couple with the 1.5-2x increase of the Naive Move Ordering step, does actually combine to provide a 1-depth increase, thus we can move from 6 to 7 simulation depth.
+
 ### 6. Realistic Win Countering
 When the minimax algorithm has declared that all possible AI moves will lead to a player win (we'll call this a "surefire loss"), it will return the same score for each choice it could possibly make. This means that it will default to the Naive Move Order on the occasion of a surefire loss, and the Naive Move Ordering, due to the fact that it is independent from the current game state, will only rarely give the best countering move or even just a good one. In practice, this often looks like the AI has "given up" and just lets the player win once it knows it's going to lose, and this is often not fun for the player. Moreover, this can actually be game-breaking because the AI detects the win assuming optimal play from the player - but the player does not always play optimally, and thus may be given a win that they did not even plan for.
 
@@ -32,9 +35,9 @@ To fix this, if the AI sees a surefire loss when searching `N` moves ahead, it w
 ## Optimization Specs Chart
 |                                  |Nodes Searched|Time Taken             |
 |---                               |---           |---                    |
-|Crude Minimax (depth: 6)          |approx. 130k  |approx. 71 sec         |
-|Crude Minimax (depth: 5)          |approx. 20k   |approx. 10 sec         |
-|Crude Minimax (depth: 4)          |approx. 2.8k  |approx. 1.6 sec        |
-|Minimax w/AB pruning (depth: 6)   |approx. 2.0k  |approx. 1.3 sec        |
-|Minimax w/AB pruning (depth: 5)   |approx. 550   |approx. 550 ms         |
-|Minimax w/AB pruning (depth: 4)   |approx. 200   |approx. 200 ms         |
+|Crude Minimax (depth: 6)          |approx. 130k  |approx. 47 sec         |
+|Crude Minimax (depth: 5)          |approx. 20k   |approx. 6.1 sec        |
+|Crude Minimax (depth: 4)          |approx. 2.8k  |approx. 0.9 sec        |
+|Minimax w/AB pruning (depth: 6)   |approx. 2.0k  |approx. 0.7 sec        |
+|Minimax w/AB pruning (depth: 5)   |approx. 550   |approx. 320 ms         |
+|Minimax w/AB pruning (depth: 4)   |approx. 200   |approx. 130 ms         |
