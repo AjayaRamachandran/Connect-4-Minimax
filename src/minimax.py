@@ -8,7 +8,7 @@ import windetection
 import transpositiontable
 import statepackager as spau # stands for [S]tate [P]ackage [A]nd [U]npackage
 ###### VARIABLES ######
-simLevel = 6
+simLevel = 7
 testBoard = []
 
 boardWidth = 7
@@ -75,11 +75,11 @@ def minimax(state, depth, alpha, beta, maximizingPlayer):
     global iters
     iters += 1
     gameState = copy.deepcopy(state)
-    gameOver = (windetection.mainRun(gameState, "tree") != 0)
+    gameScore = windetection.mainRun(gameState, "tree")
 
     
-    if depth == simLimit or gameOver:
-        score = windetection.mainRun(gameState, "tree")
+    if depth == simLimit or gameScore != 0:
+        score = gameScore
         #transpositiontable.add((gameState, score))
         return score
     
